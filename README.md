@@ -1,5 +1,4 @@
 # OnlineCourseLab
-# Online Courses Lab REST API
 
 ## Возможности
 - ✅ Полный CRUD для управления курсами
