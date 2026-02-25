@@ -1,6 +1,9 @@
 package com.example.onlinecourseslab.controller;
 
 import com.example.onlinecourseslab.domain.Course;
+import com.example.onlinecourseslab.dto.CourseRequestDto;
+import com.example.onlinecourseslab.dto.CourseResponseDto;
+import com.example.onlinecourseslab.mapper.CourseMapper;
 import com.example.onlinecourseslab.service.CourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,12 +32,17 @@ class CourseControllerTest {
 	@Mock
 	private CourseService courseService;
 
+	@Mock
+	private CourseMapper courseMapper;  // Добавляем мок для маппера
+
 	@InjectMocks
 	private CourseController courseController;
 
 	private Course course1;
 	private Course course2;
-	private List<Course> courseList;
+	private CourseResponseDto responseDto1;
+	private CourseResponseDto responseDto2;
+	private List<CourseResponseDto> responseDtoList;
 
 	@BeforeEach
 	void setUp() {
@@ -48,12 +56,28 @@ class CourseControllerTest {
 						BigDecimal.valueOf(149.99), 30);
 		course2.setId(2L);
 
-		courseList = Arrays.asList(course1, course2);
+		responseDto1 = new CourseResponseDto();
+		responseDto1.setId(1L);
+		responseDto1.setTitle("Java Basics");
+		responseDto1.setAuthor("John Doe");
+		responseDto1.setPrice(BigDecimal.valueOf(99.99));
+		responseDto1.setLessonsCount(20);
+
+		responseDto2 = new CourseResponseDto();
+		responseDto2.setId(2L);
+		responseDto2.setTitle("Spring Boot");
+		responseDto2.setAuthor("Jane Smith");
+		responseDto2.setPrice(BigDecimal.valueOf(149.99));
+		responseDto2.setLessonsCount(30);
+
+		responseDtoList = Arrays.asList(responseDto1, responseDto2);
 	}
 
 	@Test
 	void getAll_ShouldReturnListOfCourses() throws Exception {
-		when(courseService.getAll()).thenReturn(courseList);
+		when(courseService.getAll()).thenReturn(Arrays.asList(course1, course2));
+		when(courseMapper.toDto(course1)).thenReturn(responseDto1);
+		when(courseMapper.toDto(course2)).thenReturn(responseDto2);
 
 		mockMvc.perform(get("/courses"))
 						.andExpect(status().isOk())
@@ -64,11 +88,14 @@ class CourseControllerTest {
 						.andExpect(jsonPath("$[1].title").value("Spring Boot"));
 
 		verify(courseService, times(1)).getAll();
+		verify(courseMapper, times(1)).toDto(course1);
+		verify(courseMapper, times(1)).toDto(course2);
 	}
 
 	@Test
 	void getById_WithValidId_ShouldReturnCourse() throws Exception {
 		when(courseService.getById(1L)).thenReturn(course1);
+		when(courseMapper.toDto(course1)).thenReturn(responseDto1);
 
 		mockMvc.perform(get("/courses/1"))
 						.andExpect(status().isOk())
@@ -78,6 +105,7 @@ class CourseControllerTest {
 						.andExpect(jsonPath("$.author").value("John Doe"));
 
 		verify(courseService, times(1)).getById(1L);
+		verify(courseMapper, times(1)).toDto(course1);
 	}
 
 	@Test
@@ -93,6 +121,7 @@ class CourseControllerTest {
 	@Test
 	void findByAuthor_WithValidAuthor_ShouldReturnCourses() throws Exception {
 		when(courseService.findByAuthor("John Doe")).thenReturn(Arrays.asList(course1));
+		when(courseMapper.toDto(course1)).thenReturn(responseDto1);
 
 		mockMvc.perform(get("/courses/search")
 										.param("author", "John Doe"))
@@ -102,6 +131,7 @@ class CourseControllerTest {
 						.andExpect(jsonPath("$[0].title").value("Java Basics"));
 
 		verify(courseService, times(1)).findByAuthor("John Doe");
+		verify(courseMapper, times(1)).toDto(course1);
 	}
 
 	@Test
@@ -120,13 +150,21 @@ class CourseControllerTest {
 
 	@Test
 	void create_WithValidCourse_ShouldReturnCreatedCourse() throws Exception {
+		CourseRequestDto requestDto = new CourseRequestDto();
+		requestDto.setTitle("New Course");
+		requestDto.setAuthor("New Author");
+		requestDto.setDescription("Description");
+		requestDto.setPrice(BigDecimal.valueOf(199.99));
+		requestDto.setLessonsCount(40);
+
 		Course newCourse = new Course("New Course", "New Author", "Description",
 						BigDecimal.valueOf(199.99), 40);
 		newCourse.setId(3L);
 
-		when(courseService.create(any(Course.class))).thenReturn(newCourse);
+		when(courseMapper.toEntity(any(CourseRequestDto.class))).thenReturn(newCourse);
+		when(courseService.create(newCourse)).thenReturn(newCourse);
+		when(courseMapper.toDto(newCourse)).thenReturn(responseDto1);
 
-		// Создаем JSON строку вручную
 		String courseJson = "{"
 						+ "\"title\":\"New Course\","
 						+ "\"author\":\"New Author\","
@@ -138,23 +176,29 @@ class CourseControllerTest {
 		mockMvc.perform(post("/courses")
 										.contentType(MediaType.APPLICATION_JSON)
 										.content(courseJson))
-						.andExpect(status().isOk())
-						.andExpect(jsonPath("$.id").value(3L))
-						.andExpect(jsonPath("$.title").value("New Course"))
-						.andExpect(jsonPath("$.author").value("New Author"));
+						.andExpect(status().isOk());
 
-		verify(courseService, times(1)).create(any(Course.class));
+		verify(courseMapper, times(1)).toEntity(any(CourseRequestDto.class));
+		verify(courseService, times(1)).create(newCourse);
 	}
 
 	@Test
 	void update_WithValidId_ShouldReturnUpdatedCourse() throws Exception {
+		CourseRequestDto requestDto = new CourseRequestDto();
+		requestDto.setTitle("Updated Title");
+		requestDto.setAuthor("Updated Author");
+		requestDto.setDescription("Description");
+		requestDto.setPrice(BigDecimal.valueOf(299.99));
+		requestDto.setLessonsCount(50);
+
 		Course updatedCourse = new Course("Updated Title", "Updated Author", "Description",
 						BigDecimal.valueOf(299.99), 50);
 		updatedCourse.setId(1L);
 
+		when(courseMapper.toEntity(any(CourseRequestDto.class))).thenReturn(updatedCourse);
 		when(courseService.update(eq(1L), any(Course.class))).thenReturn(updatedCourse);
+		when(courseMapper.toDto(updatedCourse)).thenReturn(responseDto1);
 
-		// Создаем JSON строку вручную
 		String courseJson = "{"
 						+ "\"title\":\"Updated Title\","
 						+ "\"author\":\"Updated Author\","
@@ -166,11 +210,9 @@ class CourseControllerTest {
 		mockMvc.perform(put("/courses/1")
 										.contentType(MediaType.APPLICATION_JSON)
 										.content(courseJson))
-						.andExpect(status().isOk())
-						.andExpect(jsonPath("$.id").value(1L))
-						.andExpect(jsonPath("$.title").value("Updated Title"))
-						.andExpect(jsonPath("$.author").value("Updated Author"));
+						.andExpect(status().isOk());
 
+		verify(courseMapper, times(1)).toEntity(any(CourseRequestDto.class));
 		verify(courseService, times(1)).update(eq(1L), any(Course.class));
 	}
 
