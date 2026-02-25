@@ -7,9 +7,9 @@ public class CourseRequestDto {
     private String description;
     private String author;
     private BigDecimal price;
-    private Integer lessonsCount;
+    private Integer lessonCount;
 
-    public CourseRequestDto() { /* пустой контейнер*/ }
+    public CourseRequestDto() { /* пустой конструктор*/ }
 
     public String getTitle() {
         return title;
@@ -24,7 +24,7 @@ public class CourseRequestDto {
         return price;
     }
     public Integer getLessonsCount() {
-        return lessonsCount;
+        return lessonCount;
     }
 
 
@@ -41,6 +41,6 @@ public class CourseRequestDto {
         this.price = price;
     }
     public void setLessonsCount(Integer lessonsCount) {
-        this.lessonsCount = lessonsCount;
+        this.lessonCount = lessonsCount;
     }
 }

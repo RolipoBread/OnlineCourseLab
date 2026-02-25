@@ -23,7 +23,7 @@ public class CourseMapper {
         dto.setTitle(course.getTitle());
         dto.setAuthor(course.getAuthor());
         dto.setPrice(course.getPrice());
-        dto.setLessonsCount(course.getLessonCount());
+        dto.setLessonCount(course.getLessonCount());
         return dto;
     }
 }

@@ -82,7 +82,7 @@ class CourseMapperTest {
 		assertEquals("Test Course", result.getTitle());
 		assertEquals("Test Author", result.getAuthor());
 		assertEquals(BigDecimal.valueOf(99.99), result.getPrice());
-		assertEquals(25, result.getLessonsCount());
+		assertEquals(25, result.getLessonCount());
 	}
 
 	@Test
@@ -96,7 +96,7 @@ class CourseMapperTest {
 		assertNull(result.getTitle());
 		assertNull(result.getAuthor());
 		assertNull(result.getPrice());
-		assertEquals(0, result.getLessonsCount());
+		assertEquals(0, result.getLessonCount());
 	}
 
 	@Test
@@ -112,6 +112,6 @@ class CourseMapperTest {
 		assertEquals("Partial Course", result.getTitle());
 		assertNull(result.getAuthor());
 		assertNull(result.getPrice());
-		assertEquals(0, result.getLessonsCount());
+		assertEquals(0, result.getLessonCount());
 	}
 }

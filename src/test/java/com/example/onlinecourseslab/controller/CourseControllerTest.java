@@ -63,14 +63,14 @@ class CourseControllerTest {
 		responseDto1.setTitle("Java Basics");
 		responseDto1.setAuthor("John Doe");
 		responseDto1.setPrice(BigDecimal.valueOf(99.99));
-		responseDto1.setLessonsCount(20);
+		responseDto1.setLessonCount(20);
 
 		responseDto2 = new CourseResponseDto();
 		responseDto2.setId(2L);
 		responseDto2.setTitle("Spring Boot");
 		responseDto2.setAuthor("Jane Smith");
 		responseDto2.setPrice(BigDecimal.valueOf(149.99));
-		responseDto2.setLessonsCount(30);
+		responseDto2.setLessonCount(30);
 
 		responseDtoList = Arrays.asList(responseDto1, responseDto2);
 	}

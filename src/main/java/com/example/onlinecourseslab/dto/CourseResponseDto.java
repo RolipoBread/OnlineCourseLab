@@ -7,7 +7,7 @@ public class CourseResponseDto {
     private String title;
     private String author;
     private BigDecimal price;
-    private Integer lessonsCount;
+    private Integer lessonCount;
 
     public CourseResponseDto() { /* пустой конструктор */ }
 
@@ -22,8 +22,8 @@ public class CourseResponseDto {
     public BigDecimal getPrice() {
         return price;
     }
-    public Integer getLessonsCount() {
-        return lessonsCount;
+    public Integer getLessonCount() {
+        return lessonCount;
     }
 
 
@@ -39,7 +39,7 @@ public class CourseResponseDto {
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
-    public void setLessonsCount(Integer lessonsCount) {
-        this.lessonsCount = lessonsCount;
+    public void setLessonCount(Integer lessonCount) {
+        this.lessonCount = lessonCount;
     }
 }
