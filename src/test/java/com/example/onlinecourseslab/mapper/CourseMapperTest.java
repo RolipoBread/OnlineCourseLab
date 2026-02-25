@@ -1,8 +1,9 @@
 package com.example.onlinecourseslab.mapper;
 
 import com.example.onlinecourseslab.domain.Course;
-import com.example.onlinescourseslab.dto.CourseRequestDto;
-import com.example.onlinescourseslab.dto.CourseResponseDto;
+
+import com.example.onlinecourseslab.dto.CourseRequestDto;
+import com.example.onlinecourseslab.dto.CourseResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
