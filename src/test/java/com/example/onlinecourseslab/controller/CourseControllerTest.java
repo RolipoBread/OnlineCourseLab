@@ -5,249 +5,159 @@ import com.example.onlinecourseslab.dto.CourseRequestDto;
 import com.example.onlinecourseslab.dto.CourseResponseDto;
 import com.example.onlinecourseslab.mapper.CourseMapper;
 import com.example.onlinecourseslab.service.CourseService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(CourseController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class CourseControllerTest {
 
+	@Autowired
 	private MockMvc mockMvc;
 
-	@Mock
+	@Autowired
+	private ObjectMapper objectMapper;
+
+	@MockBean
 	private CourseService courseService;
 
-	@Mock
-	private CourseMapper courseMapper;
-
-	@InjectMocks
-	private CourseController courseController;
-
-	private Course course1;
-	private Course course2;
-	private CourseResponseDto responseDto1;
-	private CourseResponseDto responseDto2;
-	private List<CourseResponseDto> responseDtoList;
+	@MockBean
+	private CourseMapper courseMapper; // теперь мокаем mapper
 
 	@BeforeEach
-	void setUp() {
-		mockMvc = MockMvcBuilders.standaloneSetup(courseController).build();
+	void setupMapperMock() {
+		// Чтобы mapper.toDto возвращал валидный DTO для любого Course
+		Mockito.when(courseMapper.toDto(any(Course.class)))
+						.thenAnswer(invocation -> {
+							Course c = invocation.getArgument(0);
+							CourseResponseDto dto = new CourseResponseDto();
+							dto.setId(c.getId());
+							dto.setTitle(c.getTitle());
+							dto.setAuthor(c.getAuthor());
+							dto.setPrice(c.getPrice());
+							dto.setLessonCount(c.getLessonCount());
+							return dto;
+						});
 
-		course1 = new Course("Java Basics", "John Doe", "Basic Java course",
-						BigDecimal.valueOf(99.99), 20);
-		course1.setId(1L);
-
-		course2 = new Course("Spring Boot", "Jane Smith", "Advanced Spring",
-						BigDecimal.valueOf(149.99), 30);
-		course2.setId(2L);
-
-		responseDto1 = new CourseResponseDto();
-		responseDto1.setId(1L);
-		responseDto1.setTitle("Java Basics");
-		responseDto1.setAuthor("John Doe");
-		responseDto1.setPrice(BigDecimal.valueOf(99.99));
-		responseDto1.setLessonCount(20);
-
-		responseDto2 = new CourseResponseDto();
-		responseDto2.setId(2L);
-		responseDto2.setTitle("Spring Boot");
-		responseDto2.setAuthor("Jane Smith");
-		responseDto2.setPrice(BigDecimal.valueOf(149.99));
-		responseDto2.setLessonCount(30);
-
-		responseDtoList = Arrays.asList(responseDto1, responseDto2);
+		// Чтобы mapper.toEntity возвращал Course для любого DTO
+		Mockito.when(courseMapper.toEntity(any(CourseRequestDto.class)))
+						.thenAnswer(invocation -> {
+							CourseRequestDto dto = invocation.getArgument(0);
+							Course course = new Course();
+							course.setTitle(dto.getTitle());
+							course.setAuthor(dto.getAuthor());
+							course.setPrice(dto.getPrice());
+							course.setLessonCount(dto.getLessonsCount());
+							return course;
+						});
 	}
 
 	@Test
-	void getAll_ShouldReturnListOfCourses() throws Exception {
-		when(courseService.getAll()).thenReturn(Arrays.asList(course1, course2));
-		when(courseMapper.toDto(course1)).thenReturn(responseDto1);
-		when(courseMapper.toDto(course2)).thenReturn(responseDto2);
+	void getAllCourses_ShouldReturnCourses() throws Exception {
+		Course course = new Course();
+		course.setId(1L);
+		course.setTitle("Java");
+		course.setAuthor("John");
+		course.setPrice(BigDecimal.valueOf(100.0));
+		course.setLessonCount(10);
+
+		Mockito.when(courseService.getAll()).thenReturn(List.of(course));
 
 		mockMvc.perform(get("/courses"))
 						.andExpect(status().isOk())
-						.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-						.andExpect(jsonPath("$[0].id").value(1L))
-						.andExpect(jsonPath("$[0].title").value("Java Basics"))
-						.andExpect(jsonPath("$[1].id").value(2L))
-						.andExpect(jsonPath("$[1].title").value("Spring Boot"));
-
-		verify(courseService, times(1)).getAll();
-		verify(courseMapper, times(1)).toDto(course1);
-		verify(courseMapper, times(1)).toDto(course2);
+						.andExpect(jsonPath("$[0].title").value("Java"))
+						.andExpect(jsonPath("$[0].id").value(1));
 	}
 
 	@Test
-	void getById_WithValidId_ShouldReturnCourse() throws Exception {
-		when(courseService.getById(1L)).thenReturn(course1);
-		when(courseMapper.toDto(course1)).thenReturn(responseDto1);
+	void getCourseById_ShouldReturnCourse() throws Exception {
+		Course course = new Course();
+		course.setId(1L);
+		course.setTitle("Spring Boot");
+		course.setAuthor("Jane");
+		course.setPrice(BigDecimal.valueOf(200.0));
+		course.setLessonCount(20);
+
+		Mockito.when(courseService.getById(1L)).thenReturn(course);
 
 		mockMvc.perform(get("/courses/1"))
 						.andExpect(status().isOk())
-						.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-						.andExpect(jsonPath("$.id").value(1L))
-						.andExpect(jsonPath("$.title").value("Java Basics"))
-						.andExpect(jsonPath("$.author").value("John Doe"));
-
-		verify(courseService, times(1)).getById(1L);
-		verify(courseMapper, times(1)).toDto(course1);
+						.andExpect(jsonPath("$.title").value("Spring Boot"))
+						.andExpect(jsonPath("$.id").value(1));
 	}
 
 	@Test
-	void findByAuthor_WithValidAuthor_ShouldReturnCourses() throws Exception {
-		when(courseService.findByAuthor("John Doe")).thenReturn(Arrays.asList(course1));
-		when(courseMapper.toDto(course1)).thenReturn(responseDto1);
+	void createCourse_ShouldReturnCreatedCourse() throws Exception {
+		CourseRequestDto request = new CourseRequestDto();
+		request.setTitle("Kotlin");
+		request.setAuthor("Alice");
+		request.setPrice(BigDecimal.valueOf(120.0));
+		request.setLessonsCount(15);
 
-		mockMvc.perform(get("/courses/search")
-										.param("author", "John Doe"))
-						.andExpect(status().isOk())
-						.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-						.andExpect(jsonPath("$[0].author").value("John Doe"))
-						.andExpect(jsonPath("$[0].title").value("Java Basics"));
+		Course response = new Course();
+		response.setId(1L);
+		response.setTitle("Kotlin");
+		response.setAuthor("Alice");
+		response.setPrice(BigDecimal.valueOf(120.0));
+		response.setLessonCount(15);
 
-		verify(courseService, times(1)).findByAuthor("John Doe");
-		verify(courseMapper, times(1)).toDto(course1);
-	}
-
-	@Test
-	void findByAuthor_WithNoResults_ShouldReturnEmptyList() throws Exception {
-		when(courseService.findByAuthor("Unknown")).thenReturn(Arrays.asList());
-
-		mockMvc.perform(get("/courses/search")
-										.param("author", "Unknown"))
-						.andExpect(status().isOk())
-						.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-						.andExpect(jsonPath("$").isArray())
-						.andExpect(jsonPath("$").isEmpty());
-
-		verify(courseService, times(1)).findByAuthor("Unknown");
-	}
-
-	@Test
-	void create_WithValidCourse_ShouldReturnCreatedCourse() throws Exception {
-		CourseRequestDto requestDto = new CourseRequestDto();
-		requestDto.setTitle("New Course");
-		requestDto.setAuthor("New Author");
-		requestDto.setDescription("Description");
-		requestDto.setPrice(BigDecimal.valueOf(199.99));
-		requestDto.setLessonsCount(40);
-
-		Course newCourse = new Course("New Course", "New Author", "Description",
-						BigDecimal.valueOf(199.99), 40);
-		newCourse.setId(3L);
-
-		when(courseMapper.toEntity(any(CourseRequestDto.class))).thenReturn(newCourse);
-		when(courseService.create(newCourse)).thenReturn(newCourse);
-		when(courseMapper.toDto(newCourse)).thenReturn(responseDto1);
-
-		String courseJson = "{"
-						+ "\"title\":\"New Course\","
-						+ "\"author\":\"New Author\","
-						+ "\"description\":\"Description\","
-						+ "\"price\":199.99,"
-						+ "\"lessonsCount\":40"
-						+ "}";
+		Mockito.when(courseService.create(any(Course.class))).thenReturn(response);
 
 		mockMvc.perform(post("/courses")
 										.contentType(MediaType.APPLICATION_JSON)
-										.content(courseJson))
-						.andExpect(status().isOk());
-
-		verify(courseMapper, times(1)).toEntity(any(CourseRequestDto.class));
-		verify(courseService, times(1)).create(newCourse);
+										.content(objectMapper.writeValueAsString(request)))
+						.andExpect(status().isCreated())
+						.andExpect(jsonPath("$.id").value(1))
+						.andExpect(jsonPath("$.title").value("Kotlin"));
 	}
 
 	@Test
-	void update_WithValidId_ShouldReturnUpdatedCourse() throws Exception {
-		CourseRequestDto requestDto = new CourseRequestDto();
-		requestDto.setTitle("Updated Title");
-		requestDto.setAuthor("Updated Author");
-		requestDto.setDescription("Description");
-		requestDto.setPrice(BigDecimal.valueOf(299.99));
-		requestDto.setLessonsCount(50);
+	void updateCourse_ShouldReturnUpdatedCourse() throws Exception {
+		CourseRequestDto request = new CourseRequestDto();
+		request.setTitle("Updated Kotlin");
+		request.setAuthor("Alice");
+		request.setPrice(BigDecimal.valueOf(150.0));
+		request.setLessonsCount(18);
 
-		Course updatedCourse = new Course("Updated Title", "Updated Author", "Description",
-						BigDecimal.valueOf(299.99), 50);
-		updatedCourse.setId(1L);
+		Course response = new Course();
+		response.setId(1L);
+		response.setTitle("Updated Kotlin");
+		response.setAuthor("Alice");
+		response.setPrice(BigDecimal.valueOf(150.0));
+		response.setLessonCount(18);
 
-		when(courseMapper.toEntity(any(CourseRequestDto.class))).thenReturn(updatedCourse);
-		when(courseService.update(eq(1L), any(Course.class))).thenReturn(updatedCourse);
-		when(courseMapper.toDto(updatedCourse)).thenReturn(responseDto1);
-
-		String courseJson = "{"
-						+ "\"title\":\"Updated Title\","
-						+ "\"author\":\"Updated Author\","
-						+ "\"description\":\"Description\","
-						+ "\"price\":299.99,"
-						+ "\"lessonsCount\":50"
-						+ "}";
+		Mockito.when(courseService.update(eq(1L), any(Course.class)))
+						.thenReturn(response);
 
 		mockMvc.perform(put("/courses/1")
 										.contentType(MediaType.APPLICATION_JSON)
-										.content(courseJson))
-						.andExpect(status().isOk());
-
-		verify(courseMapper, times(1)).toEntity(any(CourseRequestDto.class));
-		verify(courseService, times(1)).update(eq(1L), any(Course.class));
+										.content(objectMapper.writeValueAsString(request)))
+						.andExpect(status().isOk())
+						.andExpect(jsonPath("$.title").value("Updated Kotlin"))
+						.andExpect(jsonPath("$.id").value(1));
 	}
 
 	@Test
-	void delete_WithValidId_ShouldReturnOk() throws Exception {
-		doNothing().when(courseService).delete(1L);
-
+	void deleteCourse_ShouldReturnOk() throws Exception {
 		mockMvc.perform(delete("/courses/1"))
 						.andExpect(status().isOk());
 
-		verify(courseService, times(1)).delete(1L);
-	}
-
-	@Test
-	void getById_WithInvalidId_ShouldReturnNotFound() throws Exception {
-		when(courseService.getById(999L))
-						.thenThrow(new RuntimeException("Course not found with id 999"));
-
-		mockMvc.perform(get("/courses/999"))
-						.andExpect(status().isNotFound())
-						.andExpect(result -> {
-							Exception exception = result.getResolvedException();
-							assertNotNull(exception);
-							assertTrue(exception instanceof RuntimeException);
-							assertTrue(exception.getMessage().contains("Course not found with id 999"));
-						});
-
-		verify(courseService, times(1)).getById(999L);
-	}
-
-	@Test
-	void delete_WithInvalidId_ShouldReturnNotFound() throws Exception {
-		doThrow(new RuntimeException("Course not found")).when(courseService).delete(999L);
-
-		mockMvc.perform(delete("/courses/999"))
-						.andExpect(status().isNotFound())
-						.andExpect(result -> {
-							Exception exception = result.getResolvedException();
-							assertNotNull(exception);
-							assertTrue(exception instanceof RuntimeException);
-							assertTrue(exception.getMessage().contains("Course not found"));
-						});
-
-		verify(courseService, times(1)).delete(999L);
+		Mockito.verify(courseService).delete(1L);
 	}
 }

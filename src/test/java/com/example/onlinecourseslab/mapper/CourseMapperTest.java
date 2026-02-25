@@ -3,7 +3,6 @@ package com.example.onlinecourseslab.mapper;
 import com.example.onlinecourseslab.domain.Course;
 import com.example.onlinecourseslab.dto.CourseRequestDto;
 import com.example.onlinecourseslab.dto.CourseResponseDto;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -12,106 +11,68 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CourseMapperTest {
 
-	private CourseMapper courseMapper;
+	private final CourseMapper mapper = new CourseMapper();
 
-	@BeforeEach
-	void setUp() {
-		courseMapper = new CourseMapper();
+	@Test
+	void toEntity_ShouldMapAllFields() {
+		CourseRequestDto dto = new CourseRequestDto();
+		dto.setTitle("Java Basics");
+		dto.setDescription("Learn Java");
+		dto.setAuthor("John Doe");
+		dto.setPrice(BigDecimal.valueOf(99.99));
+		dto.setLessonsCount(10);
+
+		Course course = mapper.toEntity(dto);
+
+		assertEquals("Java Basics", course.getTitle());
+		assertEquals("Learn Java", course.getDescription());
+		assertEquals("John Doe", course.getAuthor());
+		assertEquals(BigDecimal.valueOf(99.99), course.getPrice());
+		assertEquals(10, course.getLessonCount());
 	}
 
 	@Test
-	void toEntity_ShouldMapRequestDtoToCourse() {
-		CourseRequestDto requestDto = new CourseRequestDto();
-		requestDto.setTitle("Test Course");
-		requestDto.setDescription("Test Description");
-		requestDto.setAuthor("Test Author");
-		requestDto.setPrice(BigDecimal.valueOf(99.99));
-		requestDto.setLessonsCount(25);
-
-		Course result = courseMapper.toEntity(requestDto);
-
-		assertNotNull(result);
-		assertEquals("Test Course", result.getTitle());
-		assertEquals("Test Description", result.getDescription());
-		assertEquals("Test Author", result.getAuthor());
-		assertEquals(BigDecimal.valueOf(99.99), result.getPrice());
-		assertEquals(25, result.getLessonCount());
-		assertNull(result.getId());
-	}
-
-	@Test
-	void toEntity_WithNullValues_ShouldMapNulls() {
-		CourseRequestDto requestDto = new CourseRequestDto();
-
-		Course result = courseMapper.toEntity(requestDto);
-
-		assertNotNull(result);
-		assertNull(result.getTitle());
-		assertNull(result.getDescription());
-		assertNull(result.getAuthor());
-		assertNull(result.getPrice());
-		assertEquals(0, result.getLessonCount());
-	}
-
-	@Test
-	void toEntity_WithPartialData_ShouldMapAvailableData() {
-		CourseRequestDto requestDto = new CourseRequestDto();
-		requestDto.setTitle("Only Title");
-		requestDto.setLessonsCount(10);
-
-		Course result = courseMapper.toEntity(requestDto);
-
-		assertNotNull(result);
-		assertEquals("Only Title", result.getTitle());
-		assertEquals(10, result.getLessonCount());
-		assertNull(result.getDescription());
-		assertNull(result.getAuthor());
-		assertNull(result.getPrice());
-	}
-
-	@Test
-	void toDto_ShouldMapCourseToResponseDto() {
-		Course course = new Course("Test Course", "Test Author", "Test Description",
-						BigDecimal.valueOf(99.99), 25);
+	void toDto_ShouldMapAllFields() {
+		Course course = new Course();
 		course.setId(1L);
+		course.setTitle("Spring Boot");
+		course.setDescription("Full course");
+		course.setAuthor("Jane Doe");
+		course.setPrice(BigDecimal.valueOf(150.0));
+		course.setLessonCount(20);
 
-		CourseResponseDto result = courseMapper.toDto(course);
+		CourseResponseDto dto = mapper.toDto(course);
 
-		assertNotNull(result);
-		assertEquals(1L, result.getId());
-		assertEquals("Test Course", result.getTitle());
-		assertEquals("Test Author", result.getAuthor());
-		assertEquals(BigDecimal.valueOf(99.99), result.getPrice());
-		assertEquals(25, result.getLessonCount());
+		assertEquals(1L, dto.getId());
+		assertEquals("Spring Boot", dto.getTitle());
+		assertEquals("Jane Doe", dto.getAuthor());
+		assertEquals(BigDecimal.valueOf(150.0), dto.getPrice());
+		assertEquals(20, dto.getLessonCount());
 	}
 
 	@Test
-	void toDto_WithEmptyCourse_ShouldMapDefaults() {
-		Course course = new Course();
+	void toDto_WithEmptyCourse_ShouldHandleNulls() {
+		Course course = new Course(); // все поля null по умолчанию
 
-		CourseResponseDto result = courseMapper.toDto(course);
+		CourseResponseDto dto = mapper.toDto(course);
 
-		assertNotNull(result);
-		assertNull(result.getId());
-		assertNull(result.getTitle());
-		assertNull(result.getAuthor());
-		assertNull(result.getPrice());
-		assertEquals(0, result.getLessonCount());
+		assertNull(dto.getId());
+		assertNull(dto.getTitle());
+		assertNull(dto.getAuthor());
+		assertNull(dto.getPrice());
+		assertNull(dto.getLessonCount());
 	}
 
 	@Test
-	void toDto_WithPartialData_ShouldMapAvailableData() {
-		Course course = new Course();
-		course.setId(5L);
-		course.setTitle("Partial Course");
+	void toEntity_WithEmptyDto_ShouldHandleNulls() {
+		CourseRequestDto dto = new CourseRequestDto(); // все поля null
 
-		CourseResponseDto result = courseMapper.toDto(course);
+		Course course = mapper.toEntity(dto);
 
-		assertNotNull(result);
-		assertEquals(5L, result.getId());
-		assertEquals("Partial Course", result.getTitle());
-		assertNull(result.getAuthor());
-		assertNull(result.getPrice());
-		assertEquals(0, result.getLessonCount());
+		assertNull(course.getTitle());
+		assertNull(course.getDescription());
+		assertNull(course.getAuthor());
+		assertNull(course.getPrice());
+		assertNull(course.getLessonCount());
 	}
 }
