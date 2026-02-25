@@ -14,7 +14,7 @@ public class CourseMapper {
         course.setDescription(dto.getDescription());
         course.setAuthor(dto.getAuthor());
         course.setPrice(dto.getPrice());
-        course.setLessonsCount(dto.getLessonsCount());
+        course.setLessonCount(dto.getLessonsCount());
         return course;
     }
     public CourseResponseDto toDto(Course course) {
@@ -23,7 +23,7 @@ public class CourseMapper {
         dto.setTitle(course.getTitle());
         dto.setAuthor(course.getAuthor());
         dto.setPrice(course.getPrice());
-        dto.setLessonsCount(course.getLessonsCount());
+        dto.setLessonsCount(course.getLessonCount());
         return dto;
     }
 }

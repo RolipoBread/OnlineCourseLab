@@ -19,6 +19,8 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -33,7 +35,7 @@ class CourseControllerTest {
 	private CourseService courseService;
 
 	@Mock
-	private CourseMapper courseMapper;  // Добавляем мок для маппера
+	private CourseMapper courseMapper;
 
 	@InjectMocks
 	private CourseController courseController;
@@ -106,16 +108,6 @@ class CourseControllerTest {
 
 		verify(courseService, times(1)).getById(1L);
 		verify(courseMapper, times(1)).toDto(course1);
-	}
-
-	@Test
-	void getById_WithInvalidId_ShouldThrowException() throws Exception {
-		when(courseService.getById(999L)).thenThrow(new RuntimeException("Course not found with id 999"));
-
-		mockMvc.perform(get("/courses/999"))
-						.andExpect(status().is5xxServerError());
-
-		verify(courseService, times(1)).getById(999L);
 	}
 
 	@Test
@@ -227,11 +219,34 @@ class CourseControllerTest {
 	}
 
 	@Test
-	void delete_WithInvalidId_ShouldThrowException() throws Exception {
+	void getById_WithInvalidId_ShouldReturnNotFound() throws Exception {
+		when(courseService.getById(999L))
+						.thenThrow(new RuntimeException("Course not found with id 999"));
+
+		mockMvc.perform(get("/courses/999"))
+						.andExpect(status().isNotFound())
+						.andExpect(result -> {
+							Exception exception = result.getResolvedException();
+							assertNotNull(exception);
+							assertTrue(exception instanceof RuntimeException);
+							assertTrue(exception.getMessage().contains("Course not found with id 999"));
+						});
+
+		verify(courseService, times(1)).getById(999L);
+	}
+
+	@Test
+	void delete_WithInvalidId_ShouldReturnNotFound() throws Exception {
 		doThrow(new RuntimeException("Course not found")).when(courseService).delete(999L);
 
 		mockMvc.perform(delete("/courses/999"))
-						.andExpect(status().is5xxServerError());
+						.andExpect(status().isNotFound())
+						.andExpect(result -> {
+							Exception exception = result.getResolvedException();
+							assertNotNull(exception);
+							assertTrue(exception instanceof RuntimeException);
+							assertTrue(exception.getMessage().contains("Course not found"));
+						});
 
 		verify(courseService, times(1)).delete(999L);
 	}

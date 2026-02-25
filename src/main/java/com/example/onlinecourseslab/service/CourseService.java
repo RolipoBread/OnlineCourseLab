@@ -1,7 +1,6 @@
 package com.example.onlinecourseslab.service;
 
 import com.example.onlinecourseslab.domain.Course;
-
 import java.util.List;
 
 public interface CourseService {
