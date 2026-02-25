@@ -31,7 +31,7 @@ public class Course {
 
     @SuppressWarnings("checkstyle:Indentation")
     public Course(String title, String author, String description,
-                  BigDecimal price, int lessonCount) {
+                  BigDecimal price, Integer lessonCount) {
         this.title = title;
         this.author = author;
         this.description = description;

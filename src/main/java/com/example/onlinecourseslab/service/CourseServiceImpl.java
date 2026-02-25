@@ -1,4 +1,5 @@
 package com.example.onlinecourseslab.service;
+
 import com.example.onlinecourseslab.domain.Course;
 import com.example.onlinecourseslab.repository.CourseRepository;
 import java.util.List;
@@ -21,7 +22,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found with id " + id));
     }
 
     @Override
@@ -31,22 +32,19 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course update(Long id, Course course) {
-        final Course existing = getById(id);
+        Course existing = getById(id);
         existing.setTitle(course.getTitle());
         existing.setAuthor(course.getAuthor());
+        existing.setDescription(course.getDescription());
         existing.setPrice(course.getPrice());
         existing.setLessonsCount(course.getLessonsCount());
-
         return repository.save(existing);
     }
 
     @Override
     public void delete(Long id) {
         if (!repository.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Course not found with id " + id
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found with id " + id);
         }
         repository.deleteById(id);
     }

@@ -1,57 +1,63 @@
 package com.example.onlinecourseslab.controller;
 
 import com.example.onlinecourseslab.domain.Course;
+import com.example.onlinecourseslab.dto.CourseRequestDto;
+import com.example.onlinecourseslab.dto.CourseResponseDto;
 import com.example.onlinecourseslab.service.CourseService;
+import com.example.onlinecourseslab.mapper.CourseMapper;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-
-@SuppressWarnings("checkstyle:EmptyLineSeparator")
 @RestController
 @RequestMapping("/courses")
 @RequiredArgsConstructor
 public class CourseController {
 
     private final CourseService service;
+    private final CourseMapper mapper;
 
     // GET all
     @GetMapping
-    public List<Course> getAll() {
-        return service.getAll();
+    public List<CourseResponseDto> getAll() {
+        return service.getAll()
+                .stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
     }
 
     // GET by id
     @GetMapping("/{id}")
-    public Course getById(@PathVariable Long id) {
-        return service.getById(id);
+    public CourseResponseDto getById(@PathVariable Long id) {
+        Course course = service.getById(id);
+        return mapper.toDto(course);
     }
 
     // GET with RequestParam (search)
     @GetMapping("/search")
-    public List<Course> findByAuthor(@RequestParam String author) {
-        return service.findByAuthor(author);
+    public List<CourseResponseDto> findByAuthor(@RequestParam String author) {
+        return service.findByAuthor(author)
+                .stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
     }
 
     // POST
     @PostMapping
-    public Course create(@RequestBody Course course) {
-        return service.create(course);
+    public CourseResponseDto create(@RequestBody CourseRequestDto dto) {
+        Course course = mapper.toEntity(dto);
+        Course saved = service.create(course);
+        return mapper.toDto(saved);
     }
 
     // PUT
     @PutMapping("/{id}")
-    public Course update(@PathVariable Long id,
-                         @RequestBody Course course) {
-        return service.update(id, course);
+    public CourseResponseDto update(@PathVariable Long id,
+                                    @RequestBody CourseRequestDto dto) {
+        Course course = mapper.toEntity(dto);
+        Course updated = service.update(id, course);
+        return mapper.toDto(updated);
     }
 
     // DELETE
