@@ -21,7 +21,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found with id " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
     }
 
     @Override

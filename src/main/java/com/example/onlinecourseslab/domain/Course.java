@@ -24,7 +24,7 @@ public class Course {
     @Column(nullable = false)
     private BigDecimal price;
     @Column(nullable = false)
-    private int lessonCount;
+    private Integer lessonCount;
 
     @SuppressWarnings("checkstyle:WhitespaceAround")
     public Course() { }
@@ -51,7 +51,7 @@ public class Course {
     public BigDecimal getPrice() {
         return price;
     }
-    public int getLessonsCount() {
+    public Integer getLessonsCount() {
         return lessonCount; }
 
 
@@ -70,7 +70,7 @@ public class Course {
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
-    public void setLessonsCount(int lessonCount) {
+    public void setLessonsCount(Integer lessonCount) {
         this.lessonCount  = lessonCount;
     }
 }
