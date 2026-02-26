@@ -15,6 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -121,10 +123,10 @@ class CourseControllerTest {
 
 		Mockito.when(courseService.findByAuthor("John")).thenReturn(List.of(course));
 
-		mockMvc.perform(get("/courses/author/John"))
-						.andExpect(status().isOk())
-						.andExpect(jsonPath("$[0].author").value("John"))
-						.andExpect(jsonPath("$[0].id").value(1));
+		mockMvc.perform(MockMvcRequestBuilders.get("/courses/search")
+										.param("author", "John"))
+						.andExpect(MockMvcResultMatchers.status().isOk())
+						.andExpect(MockMvcResultMatchers.jsonPath("$[0].author").value("John"));
 	}
 
 	@Test

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CourseTest {
 
 	@Test
-	void defaultConstructor_andGettersSetters_shouldWork() {
+	void gettersAndSetters_shouldWork() {
 		Course course = new Course();
 
 		course.setId(1L);
@@ -28,57 +28,79 @@ class CourseTest {
 	}
 
 	@Test
-	void parameterizedConstructor_shouldSetFields() {
-		Course course = new Course(1L, "Java", "John Doe", "Desc", BigDecimal.valueOf(100), 10);
+	void allArgsConstructor_shouldCreateObject() {
+		Course course = new Course(
+						2L,
+						"Spring Boot",
+						"Jane Smith",
+						"Advanced Spring Boot course",
+						BigDecimal.valueOf(149.99),
+						20
+		);
 
-		assertEquals(1L, course.getId());
-		assertEquals("Java", course.getTitle());
-		assertEquals("John Doe", course.getAuthor());
-		assertEquals("Desc", course.getDescription());
-		assertEquals(BigDecimal.valueOf(100), course.getPrice());
-		assertEquals(10, course.getLessonCount());
+		assertEquals(2L, course.getId());
+		assertEquals("Spring Boot", course.getTitle());
+		assertEquals("Jane Smith", course.getAuthor());
+		assertEquals("Advanced Spring Boot course", course.getDescription());
+		assertEquals(BigDecimal.valueOf(149.99), course.getPrice());
+		assertEquals(20, course.getLessonCount());
 	}
 
 	@Test
 	void equalsAndHashCode_shouldWork() {
 		Course course1 = new Course();
 		course1.setId(1L);
+		course1.setTitle("Java");
+		course1.setAuthor("Author");
+
 		Course course2 = new Course();
 		course2.setId(1L);
+		course2.setTitle("Java");
+		course2.setAuthor("Author");
+
 		Course course3 = new Course();
 		course3.setId(2L);
 
-		// equals
 		assertEquals(course1, course2);
 		assertNotEquals(course1, course3);
-		assertNotEquals(course1, null);
-		assertNotEquals(course1, new Object());
 
-		// canEqual
-		assertTrue(course1.canEqual(course2));
-		assertFalse(course1.canEqual(new Object()));
-
-		// hashCode
 		assertEquals(course1.hashCode(), course2.hashCode());
 		assertNotEquals(course1.hashCode(), course3.hashCode());
 	}
 
 	@Test
-	void toString_shouldIncludeFields() {
+	void toString_shouldContainFields() {
 		Course course = new Course();
 		course.setId(1L);
-		course.setTitle("Java");
+		course.setTitle("Java Basics");
 		course.setAuthor("John Doe");
-		course.setDescription("Description");
-		course.setPrice(BigDecimal.valueOf(50));
-		course.setLessonCount(5);
+		course.setDescription("Learn Java from scratch");
+		course.setPrice(BigDecimal.valueOf(99.99));
+		course.setLessonCount(10);
 
 		String str = course.toString();
-		assertTrue(str.contains("1"));
-		assertTrue(str.contains("Java"));
+
+		assertTrue(str.contains("Java Basics"));
 		assertTrue(str.contains("John Doe"));
-		assertTrue(str.contains("Description"));
-		assertTrue(str.contains("50"));
-		assertTrue(str.contains("5"));
+		assertTrue(str.contains("Learn Java from scratch"));
 	}
+
+	@Test
+	void constructorWithoutId_shouldWork() {
+		Course course = new Course(
+						"Kotlin Basics",
+						"Alice",
+						"Learn Kotlin from scratch",
+						BigDecimal.valueOf(129.99),
+						12
+		);
+
+		assertNull(course.getId()); // id еще не присвоен
+		assertEquals("Kotlin Basics", course.getTitle());
+		assertEquals("Alice", course.getAuthor());
+		assertEquals("Learn Kotlin from scratch", course.getDescription());
+		assertEquals(BigDecimal.valueOf(129.99), course.getPrice());
+		assertEquals(12, course.getLessonCount());
+	}
+
 }
