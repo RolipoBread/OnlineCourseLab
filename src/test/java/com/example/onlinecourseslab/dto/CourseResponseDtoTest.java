@@ -15,13 +15,13 @@ class CourseResponseDtoTest {
 		dto.setId(1L);
 		dto.setTitle("Java Basics");
 		dto.setAuthor("John Doe");
-		dto.setPrice(new BigDecimal("99.99"));
+		dto.setPrice(BigDecimal.valueOf(199.99));
 		dto.setLessonCount(10);
 
 		assertEquals(1L, dto.getId());
 		assertEquals("Java Basics", dto.getTitle());
 		assertEquals("John Doe", dto.getAuthor());
-		assertEquals(new BigDecimal("99.99"), dto.getPrice());
+		assertEquals(BigDecimal.valueOf(199.99), dto.getPrice());
 		assertEquals(10, dto.getLessonCount());
 	}
 }
