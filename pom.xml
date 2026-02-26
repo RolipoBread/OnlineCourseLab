@@ -25,7 +25,9 @@
         <sonar.projectKey>rolipobread_onlinecourseslab</sonar.projectKey>
         <sonar.organization>rolipobread</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-    </properties>
+
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>    </properties>
 
     <dependencies>
 
@@ -99,6 +101,30 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.11</version>
+                <executions>
+                    <!-- подключаем агент перед тестами -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- генерация отчета после тестов -->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jacoco</outputDirectory>
+                            <formats>
+                                <xml/>
+                            </formats>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
