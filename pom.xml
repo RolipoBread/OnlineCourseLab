@@ -22,11 +22,9 @@
     <properties>
         <java.version>17</java.version>
 
-        <sonar.projectKey>rolipobread_onlinecourselab</sonar.projectKey>
+        <sonar.projectKey>rolipobread_onlinecourseslab</sonar.projectKey>
         <sonar.organization>rolipobread</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <!--suppress UnresolvedMavenProperty -->
-        <sonar.login>${env.SONAR_TOKEN}</sonar.login>
     </properties>
 
     <dependencies>
