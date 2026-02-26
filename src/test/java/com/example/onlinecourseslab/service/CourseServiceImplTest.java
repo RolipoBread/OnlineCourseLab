@@ -36,7 +36,7 @@ class CourseServiceImplTest {
 	}
 
 	@Test
-	void getById_shouldReturnCourse_whenExists() {
+	void getById_shouldReturnCourse_whenFound() {
 		Course course = new Course();
 		when(repository.findById(1L)).thenReturn(Optional.of(course));
 
@@ -53,11 +53,12 @@ class CourseServiceImplTest {
 		ResponseStatusException exception = assertThrows(ResponseStatusException.class,
 						() -> service.getById(1L));
 
-		assertEquals("404 NOT_FOUND \"Course not found with id 1\"", exception.getMessage());
+		assertTrue(exception.getMessage().contains("Course not found with id 1"));
+		verify(repository).findById(1L);
 	}
 
 	@Test
-	void create_shouldSaveAndReturnCourse() {
+	void create_shouldSaveCourse() {
 		Course course = new Course();
 		when(repository.save(course)).thenReturn(course);
 
@@ -68,20 +69,20 @@ class CourseServiceImplTest {
 	}
 
 	@Test
-	void update_shouldUpdateFieldsAndSave() {
+	void update_shouldModifyAndSaveCourse_whenExists() {
 		Course existing = new Course();
 		existing.setTitle("Old");
-		existing.setAuthor("OldAuthor");
-		existing.setDescription("OldDesc");
-		existing.setPrice(BigDecimal.valueOf(50.0));
-		existing.setLessonCount(5);
+		existing.setAuthor("Old Author");
+		existing.setDescription("Old Desc");
+		existing.setPrice(BigDecimal.valueOf(50));
+		existing.setLessonCount(10);
 
 		Course update = new Course();
 		update.setTitle("New");
-		update.setAuthor("NewAuthor");
-		update.setDescription("NewDesc");
-		update.setPrice(BigDecimal.valueOf(100.0));
-		update.setLessonCount(10);
+		update.setAuthor("New Author");
+		update.setDescription("New Desc");
+		update.setPrice(BigDecimal.valueOf(100));
+		update.setLessonCount(20);
 
 		when(repository.findById(1L)).thenReturn(Optional.of(existing));
 		when(repository.save(existing)).thenReturn(existing);
@@ -89,22 +90,22 @@ class CourseServiceImplTest {
 		Course result = service.update(1L, update);
 
 		assertEquals("New", result.getTitle());
-		assertEquals("NewAuthor", result.getAuthor());
-		assertEquals("NewDesc", result.getDescription());
-		assertEquals(BigDecimal.valueOf(100.0), result.getPrice());
-		assertEquals(10, result.getLessonCount());
+		assertEquals("New Author", result.getAuthor());
+		assertEquals("New Desc", result.getDescription());
+		assertEquals(BigDecimal.valueOf(100), result.getPrice());
+		assertEquals(20, result.getLessonCount());
 
+		verify(repository).findById(1L);
 		verify(repository).save(existing);
 	}
 
 	@Test
 	void update_shouldThrowException_whenNotFound() {
 		when(repository.findById(1L)).thenReturn(Optional.empty());
-
 		Course update = new Course();
 
-		assertThrows(ResponseStatusException.class,
-						() -> service.update(1L, update));
+		assertThrows(ResponseStatusException.class, () -> service.update(1L, update));
+		verify(repository).findById(1L);
 	}
 
 	@Test
@@ -113,6 +114,7 @@ class CourseServiceImplTest {
 
 		service.delete(1L);
 
+		verify(repository).existsById(1L);
 		verify(repository).deleteById(1L);
 	}
 
@@ -123,14 +125,15 @@ class CourseServiceImplTest {
 		ResponseStatusException exception = assertThrows(ResponseStatusException.class,
 						() -> service.delete(1L));
 
-		assertEquals("404 NOT_FOUND \"Course not found with id 1\"", exception.getMessage());
+		assertTrue(exception.getMessage().contains("Course not found with id 1"));
+		verify(repository).existsById(1L);
+		verify(repository, never()).deleteById(anyLong());
 	}
 
 	@Test
-	void findByAuthor_shouldReturnCourses() {
+	void findByAuthor_shouldReturnCoursesByAuthor() {
 		Course course = new Course();
 		course.setAuthor("John");
-
 		when(repository.findByAuthor("John")).thenReturn(List.of(course));
 
 		List<Course> result = service.findByAuthor("John");
