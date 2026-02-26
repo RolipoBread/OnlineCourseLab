@@ -103,4 +103,52 @@ class CourseTest {
 		assertEquals(12, course.getLessonCount());
 	}
 
+	@Test
+	void equals_shouldCoverAllBranches() {
+		Course course1 = new Course();
+		Course course2 = new Course();
+
+		// same reference
+		assertEquals(course1, course1);
+
+		// null comparison
+		assertNotEquals(null, course1);
+
+		// different class
+		assertNotEquals("not a course", course1);
+
+		// different ids
+		course1.setId(1L);
+		course2.setId(2L);
+		assertNotEquals(course1, course2);
+
+		// same ids
+		course2.setId(1L);
+		assertEquals(course1, course2);
+	}
+
+	@Test
+	void equals_shouldHandleNullFields() {
+		Course course1 = new Course();
+		Course course2 = new Course();
+
+		course1.setId(1L);
+		course2.setId(1L);
+
+		// остальные поля null
+		assertEquals(course1, course2);
+	}
+
+	@Test
+	void hashCode_shouldNotThrowWhenFieldsNull() {
+		Course course = new Course();
+		assertDoesNotThrow(course::hashCode);
+	}
+
+	@Test
+	void toString_shouldNotThrowWhenFieldsNull() {
+		Course course = new Course();
+		assertDoesNotThrow(course::toString);
+	}
+
 }
