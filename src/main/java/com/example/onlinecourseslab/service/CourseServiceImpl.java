@@ -22,9 +22,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course getById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Course not found with id " + id));
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found with id " + id));
     }
 
     @Override
@@ -46,8 +44,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public void delete(Long id) {
         if (!repository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Course not found with id " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found with id " + id);
         }
         repository.deleteById(id);
     }

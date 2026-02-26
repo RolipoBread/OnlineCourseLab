@@ -1,12 +1,13 @@
 package com.example.onlinecourseslab;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class OnlinecourseslabApplicationMainTest {
 
     @Test
     void mainMethod_shouldRun() {
-        OnlinecourseslabApplication.main(new String[]{});
-    }
+        assertDoesNotThrow(() ->
+                OnlinecourseslabApplication.main(new String[]{})
+        );
 }
