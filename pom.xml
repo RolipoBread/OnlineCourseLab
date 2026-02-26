@@ -25,7 +25,8 @@
         <sonar.projectKey>rolipobread_onlinecourselab</sonar.projectKey>
         <sonar.organization>rolipobread</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.login>c306db6b8b828a380d448c4054fb9bb628b48a87</sonar.login>
+        <!--suppress UnresolvedMavenProperty -->
+        <sonar.login>${env.SONAR_TOKEN}</sonar.login>
     </properties>
 
     <dependencies>
