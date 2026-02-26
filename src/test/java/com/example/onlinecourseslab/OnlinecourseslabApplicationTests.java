@@ -10,4 +10,5 @@ class OnlinecourseslabApplicationMainTest {
         assertDoesNotThrow(() ->
                 OnlinecourseslabApplication.main(new String[]{})
         );
+    }
 }
