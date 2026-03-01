@@ -18,6 +18,7 @@ class CourseTest {
 		course.setDescription("Learn Java from scratch");
 		course.setPrice(BigDecimal.valueOf(99.99));
 		course.setLessonCount(10);
+		course.setCategory(null); // безопасно
 
 		assertEquals(1L, course.getId());
 		assertEquals("Java Basics", course.getTitle());
@@ -25,17 +26,19 @@ class CourseTest {
 		assertEquals("Learn Java from scratch", course.getDescription());
 		assertEquals(BigDecimal.valueOf(99.99), course.getPrice());
 		assertEquals(10, course.getLessonCount());
+		assertNull(course.getCategory());
 	}
 
 	@Test
 	void allArgsConstructor_shouldCreateObject() {
 		Course course = new Course(
-						2L,
-						"Spring Boot",
-						"Jane Smith",
-						"Advanced Spring Boot course",
-						BigDecimal.valueOf(149.99),
-						20
+			2L,
+			"Spring Boot",
+			"Jane Smith",
+			"Advanced Spring Boot course",
+			BigDecimal.valueOf(149.99),
+			20,
+			null // category
 		);
 
 		assertEquals(2L, course.getId());
@@ -44,6 +47,27 @@ class CourseTest {
 		assertEquals("Advanced Spring Boot course", course.getDescription());
 		assertEquals(BigDecimal.valueOf(149.99), course.getPrice());
 		assertEquals(20, course.getLessonCount());
+		assertNull(course.getCategory());
+	}
+
+	@Test
+	void constructorWithoutId_shouldWork() {
+		Course course = new Course(
+			"Kotlin Basics",
+			"Alice",
+			"Learn Kotlin from scratch",
+			BigDecimal.valueOf(129.99),
+			12,
+			null // category
+		);
+
+		assertNull(course.getId()); // id еще не присвоен
+		assertEquals("Kotlin Basics", course.getTitle());
+		assertEquals("Alice", course.getAuthor());
+		assertEquals("Learn Kotlin from scratch", course.getDescription());
+		assertEquals(BigDecimal.valueOf(129.99), course.getPrice());
+		assertEquals(12, course.getLessonCount());
+		assertNull(course.getCategory());
 	}
 
 	@Test
@@ -66,41 +90,6 @@ class CourseTest {
 
 		assertEquals(course1.hashCode(), course2.hashCode());
 		assertNotEquals(course1.hashCode(), course3.hashCode());
-	}
-
-	@Test
-	void toString_shouldContainFields() {
-		Course course = new Course();
-		course.setId(1L);
-		course.setTitle("Java Basics");
-		course.setAuthor("John Doe");
-		course.setDescription("Learn Java from scratch");
-		course.setPrice(BigDecimal.valueOf(99.99));
-		course.setLessonCount(10);
-
-		String str = course.toString();
-
-		assertTrue(str.contains("Java Basics"));
-		assertTrue(str.contains("John Doe"));
-		assertTrue(str.contains("Learn Java from scratch"));
-	}
-
-	@Test
-	void constructorWithoutId_shouldWork() {
-		Course course = new Course(
-						"Kotlin Basics",
-						"Alice",
-						"Learn Kotlin from scratch",
-						BigDecimal.valueOf(129.99),
-						12
-		);
-
-		assertNull(course.getId()); // id еще не присвоен
-		assertEquals("Kotlin Basics", course.getTitle());
-		assertEquals("Alice", course.getAuthor());
-		assertEquals("Learn Kotlin from scratch", course.getDescription());
-		assertEquals(BigDecimal.valueOf(129.99), course.getPrice());
-		assertEquals(12, course.getLessonCount());
 	}
 
 	@Test
@@ -146,9 +135,26 @@ class CourseTest {
 	}
 
 	@Test
+	void toString_shouldContainFields() {
+		Course course = new Course();
+		course.setId(1L);
+		course.setTitle("Java Basics");
+		course.setAuthor("John Doe");
+		course.setDescription("Learn Java from scratch");
+		course.setPrice(BigDecimal.valueOf(99.99));
+		course.setLessonCount(10);
+		course.setCategory(null);
+
+		String str = course.toString();
+
+		assertTrue(str.contains("Java Basics"));
+		assertTrue(str.contains("John Doe"));
+		assertTrue(str.contains("Learn Java from scratch"));
+	}
+
+	@Test
 	void toString_shouldNotThrowWhenFieldsNull() {
 		Course course = new Course();
 		assertDoesNotThrow(course::toString);
 	}
-
 }

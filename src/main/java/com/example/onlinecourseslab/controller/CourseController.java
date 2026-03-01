@@ -24,7 +24,7 @@ public class CourseController {
     // GET all
     @GetMapping
     public ResponseEntity<List<CourseResponseDto>> getAll() {
-        List<CourseResponseDto> list = service.getAll()
+        final List<CourseResponseDto> list = service.getAll()
                 .stream()
                 .map(mapper::toDto)
                 .toList();
@@ -40,7 +40,7 @@ public class CourseController {
     // GET by author (search)
     @GetMapping("/search")
     public ResponseEntity<List<CourseResponseDto>> findByAuthor(@RequestParam String author) {
-        List<CourseResponseDto> list = service.findByAuthor(author)
+        final List<CourseResponseDto> list = service.findByAuthor(author)
                 .stream()
                 .map(mapper::toDto)
                 .toList();
@@ -50,7 +50,7 @@ public class CourseController {
     // POST create
     @PostMapping
     public ResponseEntity<CourseResponseDto> create(@RequestBody CourseRequestDto dto) {
-        Course saved = service.create(mapper.toEntity(dto));
+        final Course saved = service.create(mapper.toEntity(dto));
         return ResponseEntity.status(201).body(mapper.toDto(saved));
     }
 
@@ -58,7 +58,7 @@ public class CourseController {
     @PutMapping("/{id}")
     public ResponseEntity<CourseResponseDto> update(@PathVariable Long id,
                                                     @RequestBody CourseRequestDto dto) {
-        Course updated = service.update(id, mapper.toEntity(dto));
+        final Course updated = service.update(id, mapper.toEntity(dto));
         return ResponseEntity.ok(mapper.toDto(updated));
     }
 

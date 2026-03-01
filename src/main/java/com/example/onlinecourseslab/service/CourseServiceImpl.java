@@ -1,10 +1,12 @@
 package com.example.onlinecourseslab.service;
 
+import com.example.onlinecourseslab.domain.Lesson;
 import com.example.onlinecourseslab.domain.Course;
 import com.example.onlinecourseslab.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -32,7 +34,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course update(Long id, Course course) {
-        Course existing = getById(id);
+        final Course existing = getById(id);
         existing.setTitle(course.getTitle());
         existing.setAuthor(course.getAuthor());
         existing.setDescription(course.getDescription());
@@ -52,5 +54,18 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<Course> findByAuthor(String author) {
         return repository.findByAuthor(author).stream().toList();
+    }
+
+    @Override
+    @Transactional
+    public Course createCourseWithLessons(Course course) {
+
+        if (course.getLessons() != null) {
+            for (Lesson lesson : course.getLessons()) {
+                lesson.setCourse(course); // ВАЖНО
+            }
+        }
+
+        return repository.save(course);
     }
 }

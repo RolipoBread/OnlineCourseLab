@@ -10,4 +10,5 @@ public interface CourseService {
     Course update(Long id, Course course);
     void delete(Long id);
     List<Course> findByAuthor(String author);
+    Course createCourseWithLessons(Course course);
 }
