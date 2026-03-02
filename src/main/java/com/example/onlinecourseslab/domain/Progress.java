@@ -1,6 +1,10 @@
 package com.example.onlinecourseslab.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,27 +31,23 @@ import java.time.LocalDateTime;
         attributeNodes = @NamedAttributeNode("courses")
     )
 )
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Progress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
     private User student;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson lesson;
-
     @Column(nullable = false)
     private boolean completed;
-
     private LocalDateTime completedAt;
-
-    public Progress() {
-    }
 
     public Progress(User student, Lesson lesson, boolean completed) {
         this.student = student;
@@ -57,39 +57,6 @@ public class Progress {
             this.completedAt = LocalDateTime.now();
         }
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public User getStudent() {
-        return student;
-    }
-
-    public Lesson getLesson() {
-        return lesson;
-    }
-
-    public boolean isCompleted() {
-        return completed;
-    }
-
-    public LocalDateTime getCompletedAt() {
-        return completedAt;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setStudent(User student) {
-        this.student = student;
-    }
-
-    public void setLesson(Lesson lesson) {
-        this.lesson = lesson;
-    }
-
     public void setCompleted(boolean completed) {
         this.completed = completed;
         if (completed && this.completedAt == null) {
@@ -97,9 +64,5 @@ public class Progress {
         } else if (!completed) {
             this.completedAt = null;
         }
-    }
-
-    public void setCompletedAt(LocalDateTime completedAt) {
-        this.completedAt = completedAt;
     }
 }

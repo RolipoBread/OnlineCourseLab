@@ -1,9 +1,15 @@
 package com.example.onlinecourseslab.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "lessons")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,53 +28,10 @@ public class Lesson {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    public Lesson() {
-    }
-
     public Lesson(String title, String content, Integer orderNumber, Course course) {
         this.title = title;
         this.content = content;
         this.orderNumber = orderNumber;
-        this.course = course;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public Integer getOrderNumber() {
-        return orderNumber;
-    }
-
-    public Course getCourse() {
-        return course;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setOrderNumber(Integer orderNumber) {
-        this.orderNumber = orderNumber;
-    }
-
-    public void setCourse(Course course) {
         this.course = course;
     }
 }
