@@ -59,6 +59,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void deleteTest(Long id) {
+        final User user = getById(id);
+
+        progressService.deleteByStudent(user);
+
+        repository.delete(user);
+        throw new IllegalStateException("Тестовая ошибка");    }
+
+    @Override
     public User findByEmail(String email) {
         return repository.findByEmail(email)
             .orElseThrow(() ->
@@ -66,4 +75,5 @@ public class UserServiceImpl implements UserService {
                     HttpStatus.NOT_FOUND,
                     "User not found with email " + email));
     }
+
 }

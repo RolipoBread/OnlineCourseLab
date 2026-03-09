@@ -58,4 +58,9 @@ public class UserController {
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
+
+    @DeleteMapping("/test/{id}")
+    public void deleteTest(@PathVariable Long id) {
+        service.deleteTest(id);
+    }
 }

@@ -68,15 +68,4 @@ public class CourseServiceImpl implements CourseService {
     public List<Course> findByAuthor(String author) {
         return repository.findByAuthor(author);
     }
-
-    @Override
-    @Transactional
-    public Course createCourseWithLessons(Course course) {
-        if (course.getLessons() != null) {
-            for (Lesson lesson : course.getLessons()) {
-                lesson.setCourse(course);
-            }
-        }
-        return repository.save(course);
-    }
 }
