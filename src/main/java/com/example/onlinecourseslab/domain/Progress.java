@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "progress", uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "lesson_id"}))
@@ -39,30 +39,22 @@ public class Progress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
     private User student;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Lesson lesson;
+
     @Column(nullable = false)
     private boolean completed;
-    private LocalDateTime completedAt;
 
     public Progress(User student, Lesson lesson, boolean completed) {
         this.student = student;
         this.lesson = lesson;
         this.completed = completed;
-        if (completed) {
-            this.completedAt = LocalDateTime.now();
-        }
-    }
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-        if (completed && this.completedAt == null) {
-            this.completedAt = LocalDateTime.now();
-        } else if (!completed) {
-            this.completedAt = null;
-        }
     }
 }

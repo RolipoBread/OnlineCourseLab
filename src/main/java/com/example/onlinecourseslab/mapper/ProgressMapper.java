@@ -13,7 +13,6 @@ public class ProgressMapper {
         dto.setStudentId(progress.getStudent().getId());
         dto.setLessonId(progress.getLesson().getId());
         dto.setCompleted(progress.isCompleted());
-        dto.setCompletedAt(progress.getCompletedAt());
         return dto;
     }
 }

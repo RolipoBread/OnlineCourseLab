@@ -8,12 +8,10 @@ import com.example.onlinecourseslab.domain.Course;
 import java.util.List;
 
 public interface ProgressService {
-
     Progress markCompleted(User student, Lesson lesson);
-
     List<Progress> getByStudent(User student);
-
     List<Progress> getByStudentAndCourse(User student, Course course);
-
     Progress getByStudentAndLesson(User student, Lesson lesson);
+    void deleteByLessons(List<Lesson> lessons);
+    void deleteByStudent(User student);
 }

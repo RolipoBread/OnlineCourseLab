@@ -1,10 +1,12 @@
 package com.example.onlinecourseslab.controller;
 
 import com.example.onlinecourseslab.domain.Course;
+import com.example.onlinecourseslab.domain.Category;
 import com.example.onlinecourseslab.dto.CourseRequestDto;
 import com.example.onlinecourseslab.dto.CourseResponseDto;
 import com.example.onlinecourseslab.mapper.CourseMapper;
 import com.example.onlinecourseslab.service.CourseService;
+import com.example.onlinecourseslab.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,49 +22,65 @@ public class CourseController {
 
     private final CourseService service;
     private final CourseMapper mapper;
+    private final CategoryService categoryService;
 
-    // GET all
     @GetMapping
-    public ResponseEntity<List<CourseResponseDto>> getAll() {
-        final List<CourseResponseDto> list = service.getAll()
-                .stream()
-                .map(mapper::toDto)
-                .toList();
+    public ResponseEntity<List<CourseResponseDto>> getCourses(
+        @RequestParam(required = false) String author) {
+
+        final List<Course> courses;
+        if (author != null && !author.trim().isEmpty()) {
+            courses = service.findByAuthor(author);
+        } else {
+            courses = service.getAll();
+        }
+
+        final List<CourseResponseDto> list = courses.stream()
+            .map(mapper::toDto)
+            .toList();
         return ResponseEntity.ok(list);
     }
 
-    // GET by id
     @GetMapping("/{id}")
     public ResponseEntity<CourseResponseDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(mapper.toDto(service.getById(id)));
     }
 
-    // GET by author (search)
-    @GetMapping("/search")
-    public ResponseEntity<List<CourseResponseDto>> findByAuthor(@RequestParam String author) {
-        final List<CourseResponseDto> list = service.findByAuthor(author)
-                .stream()
-                .map(mapper::toDto)
-                .toList();
-        return ResponseEntity.ok(list);
-    }
-
-    // POST create
     @PostMapping
     public ResponseEntity<CourseResponseDto> create(@RequestBody CourseRequestDto dto) {
-        final Course saved = service.create(mapper.toEntity(dto));
+        final Course course = mapper.toEntity(dto);
+
+        if (dto.getCategoryId() != null) {
+            final Category category = categoryService.getById(dto.getCategoryId());
+            course.setCategory(category);
+        }
+
+        final Course saved = service.create(course);
         return ResponseEntity.status(201).body(mapper.toDto(saved));
     }
 
-    // PUT update
     @PutMapping("/{id}")
     public ResponseEntity<CourseResponseDto> update(@PathVariable Long id,
                                                     @RequestBody CourseRequestDto dto) {
-        final Course updated = service.update(id, mapper.toEntity(dto));
+        final Course existingCourse = service.getById(id);
+
+        existingCourse.setTitle(dto.getTitle());
+        existingCourse.setDescription(dto.getDescription());
+        existingCourse.setAuthor(dto.getAuthor());
+        existingCourse.setPrice(dto.getPrice());
+        existingCourse.setLessonCount(dto.getLessonCount());
+
+        if (dto.getCategoryId() != null) {
+            final Category category = categoryService.getById(dto.getCategoryId());
+            existingCourse.setCategory(category);
+        } else {
+            existingCourse.setCategory(null);
+        }
+
+        final Course updated = service.update(id, existingCourse);
         return ResponseEntity.ok(mapper.toDto(updated));
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         try {

@@ -1,25 +1,37 @@
 package com.example.onlinecourseslab.mapper;
 
+import com.example.onlinecourseslab.domain.Category;
 import com.example.onlinecourseslab.domain.Course;
 import com.example.onlinecourseslab.dto.CourseRequestDto;
 import com.example.onlinecourseslab.dto.CourseResponseDto;
+import com.example.onlinecourseslab.service.CategoryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class CourseMapper {
 
+    private final CategoryService categoryService;
+
     public Course toEntity(CourseRequestDto dto) {
-        Course course = new Course();
+        final Course course = new Course();
         course.setTitle(dto.getTitle());
         course.setDescription(dto.getDescription());
         course.setAuthor(dto.getAuthor());
         course.setPrice(dto.getPrice());
         course.setLessonCount(dto.getLessonCount());
+
+        if (dto.getCategoryId() != null) {
+            final Category category = categoryService.getById(dto.getCategoryId());
+            course.setCategory(category);
+        }
+
         return course;
     }
 
     public CourseResponseDto toDto(Course course) {
-        CourseResponseDto dto = new CourseResponseDto();
+        final CourseResponseDto dto = new CourseResponseDto();
 
         dto.setId(course.getId());
         dto.setTitle(course.getTitle());

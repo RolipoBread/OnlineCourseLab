@@ -6,8 +6,9 @@ import com.example.onlinecourseslab.domain.Lesson;
 import com.example.onlinecourseslab.domain.Course;
 import com.example.onlinecourseslab.repository.ProgressRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -19,8 +20,9 @@ public class ProgressServiceImpl implements ProgressService {
     private final ProgressRepository repository;
 
     @Override
+    @Transactional
     public Progress markCompleted(User student, Lesson lesson) {
-        Progress progress = repository.findByStudentAndLesson(student, lesson)
+        final Progress progress = repository.findByStudentAndLesson(student, lesson)
             .orElse(new Progress(student, lesson, false));
         progress.setCompleted(true);
         return repository.save(progress);
@@ -33,7 +35,7 @@ public class ProgressServiceImpl implements ProgressService {
 
     @Override
     public List<Progress> getByStudentAndCourse(User student, Course course) {
-        return repository.findByStudentAndLesson_Course(student, course);
+        return repository.findByStudentAndLessonCourse(student, course);
     }
 
     @Override
@@ -42,5 +44,25 @@ public class ProgressServiceImpl implements ProgressService {
             .orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Progress not found for student and lesson"));
+    }
+
+    @Override
+    @Transactional
+    public void deleteByLessons(List<Lesson> lessons) {
+        for (Lesson lesson : lessons) {
+            final List<Progress> progresses = repository.findByLessonId(lesson.getId());
+            if (!progresses.isEmpty()) {
+                repository.deleteAll(progresses);
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteByStudent(User student) {
+        final List<Progress> progresses = repository.findByStudent(student);
+        if (!progresses.isEmpty()) {
+            repository.deleteAll(progresses);
+        }
     }
 }

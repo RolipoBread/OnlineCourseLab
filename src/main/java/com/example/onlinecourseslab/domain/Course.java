@@ -37,7 +37,7 @@ public class Course {
 
     // Связь с категорией
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id") // внешний ключ к таблице categories
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

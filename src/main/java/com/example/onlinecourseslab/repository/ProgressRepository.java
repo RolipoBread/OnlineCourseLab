@@ -6,26 +6,32 @@ import com.example.onlinecourseslab.domain.Lesson;
 import com.example.onlinecourseslab.domain.Course;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ProgressRepository extends JpaRepository<Progress, Long> {
 
-    // Простой поиск по студенту
     @EntityGraph(value = "Progress.student.courses", type = EntityGraph.EntityGraphType.LOAD)
     List<Progress> findByStudent(User student);
-
-    // Поиск по студенту и урокам
     List<Progress> findByStudentAndLessonIn(User student, List<Lesson> lessons);
-
-    // Один прогресс
     Optional<Progress> findByStudentAndLesson(User student, Lesson lesson);
-
-    // По курсу
-    List<Progress> findByStudentAndLesson_Course(User student, Course course);
-
-    // Все прогрессы с подгрузкой lesson->course
+    List<Progress> findByStudentAndLessonCourse(User student, Course course);
     @EntityGraph(value = "Progress.lesson.course", type = EntityGraph.EntityGraphType.LOAD)
     List<Progress> findAll();
+    List<Progress> findByLessonId(Long lessonId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Progress p WHERE p.lesson.id IN :lessonIds")
+    int deleteAllByLessonIds(@Param("lessonIds") List<Long> lessonIds);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Progress p WHERE p.student.id = :studentId")
+    int deleteAllByStudentId(@Param("studentId") Long studentId);
 }
