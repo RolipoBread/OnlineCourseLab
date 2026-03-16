@@ -1,5 +1,6 @@
 package com.example.onlinecourseslab.service;
 
+import com.example.onlinecourseslab.domain.Role;
 import com.example.onlinecourseslab.domain.User;
 import com.example.onlinecourseslab.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -59,21 +60,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteTest(Long id) {
-        final User user = getById(id);
-
-        progressService.deleteByStudent(user);
-
-        repository.delete(user);
-        throw new IllegalStateException("Тестовая ошибка");    }
-
-    @Override
     public User findByEmail(String email) {
         return repository.findByEmail(email)
             .orElseThrow(() ->
                 new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     "User not found with email " + email));
+    }
+
+    @Override
+    public List<User> findByRole(String role) {
+        return repository.findByRoleNative(role);
     }
 
 }

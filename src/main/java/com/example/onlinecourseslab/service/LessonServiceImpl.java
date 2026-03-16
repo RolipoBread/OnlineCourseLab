@@ -8,13 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository repository;
+    private final Map<Long, List<Lesson>> lessonCache = new HashMap<>();
 
     @Override
     public List<Lesson> getAll() {
@@ -32,7 +35,9 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public Lesson create(Lesson lesson) {
-        return repository.save(lesson);
+        final Lesson saved = repository.save(lesson);
+        lessonCache.remove(lesson.getCourse().getId());
+        return saved;
     }
 
     @Override
@@ -42,21 +47,27 @@ public class LessonServiceImpl implements LessonService {
         existing.setContent(lesson.getContent());
         existing.setOrderNumber(lesson.getOrderNumber());
         existing.setCourse(lesson.getCourse());
-        return repository.save(existing);
+        final Lesson saved = repository.save(existing);
+        lessonCache.remove(existing.getCourse().getId());
+        return saved;
     }
 
     @Override
     public void delete(Long id) {
-        if (!repository.existsById(id)) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
-                "Lesson not found with id " + id);
-        }
+        final Lesson lesson = getById(id);
         repository.deleteById(id);
+        lessonCache.remove(lesson.getCourse().getId());
     }
 
     @Override
-    public List<Lesson> getByCourse(Course course) {
-        return repository.findByCourse(course);
+    public List<Lesson> getByCourse(Long courseId) {
+
+        if (lessonCache.containsKey(courseId)) {
+            return lessonCache.get(courseId);
+        }
+        List<Lesson> lessons = repository.findByCourse_Id(courseId);
+        lessonCache.put(courseId, lessons);
+
+        return lessons;
     }
 }

@@ -38,8 +38,7 @@ public class LessonController {
 
     @GetMapping("/course/{courseId}")
     public ResponseEntity<List<LessonResponseDto>> getByCourse(@PathVariable Long courseId) {
-        final Course course = courseService.getById(courseId);
-        final List<LessonResponseDto> list = lessonService.getByCourse(course)
+        final List<LessonResponseDto> list = lessonService.getByCourse(courseId)
             .stream()
             .map(mapper::toDto)
             .toList();

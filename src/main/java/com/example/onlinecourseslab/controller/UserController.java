@@ -1,5 +1,6 @@
 package com.example.onlinecourseslab.controller;
 
+import com.example.onlinecourseslab.domain.Role;
 import com.example.onlinecourseslab.domain.User;
 import com.example.onlinecourseslab.dto.UserRequestDto;
 import com.example.onlinecourseslab.dto.UserResponseDto;
@@ -59,8 +60,14 @@ public class UserController {
         service.delete(id);
     }
 
-    @DeleteMapping("/test/{id}")
-    public void deleteTest(@PathVariable Long id) {
-        service.deleteTest(id);
+    @GetMapping("/role")
+    public ResponseEntity<List<UserResponseDto>> getByRole(
+        @RequestParam String role) {
+        final List<UserResponseDto> list = service.findByRole(role.toUpperCase())
+            .stream()
+            .map(mapper::toDto)
+            .toList();
+        return ResponseEntity.ok(list);
     }
+
 }

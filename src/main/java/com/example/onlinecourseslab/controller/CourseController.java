@@ -1,7 +1,6 @@
 package com.example.onlinecourseslab.controller;
 
 import com.example.onlinecourseslab.domain.Course;
-import com.example.onlinecourseslab.domain.Category;
 import com.example.onlinecourseslab.dto.CourseRequestDto;
 import com.example.onlinecourseslab.dto.CourseResponseDto;
 import com.example.onlinecourseslab.mapper.CourseMapper;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @RestController
@@ -26,18 +26,24 @@ public class CourseController {
 
     @GetMapping
     public ResponseEntity<List<CourseResponseDto>> getCourses(
-        @RequestParam(required = false) String author) {
+        @RequestParam(required = false) String author,
+        @RequestParam(required = false) String category,
+        Pageable pageable) {
 
         final List<Course> courses;
-        if (author != null && !author.trim().isEmpty()) {
+
+        if (author != null && !author.isBlank()) {
             courses = service.findByAuthor(author);
+        } else if (category != null && !category.isBlank()) {
+            courses = service.findByCategory(category);
         } else {
-            courses = service.getAll();
+            courses = service.getAll(pageable).getContent();
         }
 
         final List<CourseResponseDto> list = courses.stream()
             .map(mapper::toDto)
             .toList();
+
         return ResponseEntity.ok(list);
     }
 
@@ -46,38 +52,21 @@ public class CourseController {
         return ResponseEntity.ok(mapper.toDto(service.getById(id)));
     }
 
+
     @PostMapping
     public ResponseEntity<CourseResponseDto> create(@RequestBody CourseRequestDto dto) {
-        final Course course = mapper.toEntity(dto);
+        final Course course = service.create(dto);
 
-        if (dto.getCategoryId() != null) {
-            final Category category = categoryService.getById(dto.getCategoryId());
-            course.setCategory(category);
-        }
-
-        final Course saved = service.create(course);
-        return ResponseEntity.status(201).body(mapper.toDto(saved));
+        return ResponseEntity.status(201).body(mapper.toDto(course));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CourseResponseDto> update(@PathVariable Long id,
-                                                    @RequestBody CourseRequestDto dto) {
-        final Course existingCourse = service.getById(id);
+    public ResponseEntity<CourseResponseDto> update(
+        @PathVariable Long id,
+        @RequestBody CourseRequestDto dto) {
 
-        existingCourse.setTitle(dto.getTitle());
-        existingCourse.setDescription(dto.getDescription());
-        existingCourse.setAuthor(dto.getAuthor());
-        existingCourse.setPrice(dto.getPrice());
-        existingCourse.setLessonCount(dto.getLessonCount());
+        final Course updated = service.update(id, dto);
 
-        if (dto.getCategoryId() != null) {
-            final Category category = categoryService.getById(dto.getCategoryId());
-            existingCourse.setCategory(category);
-        } else {
-            existingCourse.setCategory(null);
-        }
-
-        final Course updated = service.update(id, existingCourse);
         return ResponseEntity.ok(mapper.toDto(updated));
     }
 
