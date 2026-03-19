@@ -1,6 +1,5 @@
 package com.example.onlinecourseslab.controller;
 
-import com.example.onlinecourseslab.domain.Role;
 import com.example.onlinecourseslab.domain.User;
 import com.example.onlinecourseslab.dto.UserRequestDto;
 import com.example.onlinecourseslab.dto.UserResponseDto;

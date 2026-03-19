@@ -2,22 +2,28 @@ package com.example.onlinecourseslab.service;
 
 import com.example.onlinecourseslab.domain.Lesson;
 import com.example.onlinecourseslab.domain.Course;
+import com.example.onlinecourseslab.dto.LessonCacheKeyDto;
 import com.example.onlinecourseslab.repository.LessonRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository repository;
-    private final Map<Long, List<Lesson>> lessonCache = new HashMap<>();
+    private final Map<LessonCacheKeyDto, List<Lesson>> lessonCache = new HashMap<>();
 
     @Override
     public List<Lesson> getAll() {
@@ -36,7 +42,7 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public Lesson create(Lesson lesson) {
         final Lesson saved = repository.save(lesson);
-        lessonCache.remove(lesson.getCourse().getId());
+        lessonCache.clear();
         return saved;
     }
 
@@ -48,26 +54,39 @@ public class LessonServiceImpl implements LessonService {
         existing.setOrderNumber(lesson.getOrderNumber());
         existing.setCourse(lesson.getCourse());
         final Lesson saved = repository.save(existing);
-        lessonCache.remove(existing.getCourse().getId());
+        lessonCache.clear();
         return saved;
     }
 
     @Override
     public void delete(Long id) {
-        final Lesson lesson = getById(id);
         repository.deleteById(id);
-        lessonCache.remove(lesson.getCourse().getId());
+        lessonCache.clear();
     }
 
     @Override
-    public List<Lesson> getByCourse(Long courseId) {
+    public List<Lesson> getByCourse(Course course, int page, int size) {
 
-        if (lessonCache.containsKey(courseId)) {
-            return lessonCache.get(courseId);
+        LessonCacheKeyDto key = new LessonCacheKeyDto(
+            course.getId(),
+            page,
+            size
+        );
+
+        if (lessonCache.containsKey(key)) {
+            log.info("Hash");
+            return lessonCache.get(key);
         }
-        List<Lesson> lessons = repository.findByCourse_Id(courseId);
-        lessonCache.put(courseId, lessons);
+
+        log.info("SQL");
+        Pageable pageable = PageRequest.of(page, size);
+        List<Lesson> lessons = repository
+            .findByCourse(course, pageable)
+            .getContent();
+
+        lessonCache.put(key, lessons);
 
         return lessons;
     }
+
 }

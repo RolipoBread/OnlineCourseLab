@@ -1,6 +1,5 @@
 package com.example.onlinecourseslab.service;
 
-import com.example.onlinecourseslab.domain.Role;
 import com.example.onlinecourseslab.domain.User;
 import com.example.onlinecourseslab.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
-    private final ProgressService progressService; // ДОБАВЛЯЕМ
+    private final ProgressService progressService;
 
     @Override
     public List<User> getAll() {

@@ -35,7 +35,6 @@ public class Course {
     @Column(nullable = false)
     private Integer lessonCount;
 
-    // Связь с категорией
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;

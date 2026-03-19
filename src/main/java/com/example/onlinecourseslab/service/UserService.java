@@ -1,6 +1,5 @@
 package com.example.onlinecourseslab.service;
 
-import com.example.onlinecourseslab.domain.Role;
 import com.example.onlinecourseslab.domain.User;
 
 import java.util.List;
