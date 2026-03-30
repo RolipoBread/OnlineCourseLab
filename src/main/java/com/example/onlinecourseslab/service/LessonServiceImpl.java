@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,7 +67,7 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public List<Lesson> getByCourse(Course course, int page, int size) {
 
-        LessonCacheKeyDto key = new LessonCacheKeyDto(
+        final LessonCacheKeyDto key = new LessonCacheKeyDto(
             course.getId(),
             page,
             size
@@ -80,8 +79,8 @@ public class LessonServiceImpl implements LessonService {
         }
 
         log.info("SQL");
-        Pageable pageable = PageRequest.of(page, size);
-        List<Lesson> lessons = repository
+        final Pageable pageable = PageRequest.of(page, size);
+        final List<Lesson> lessons = repository
             .findByCourse(course, pageable)
             .getContent();
 

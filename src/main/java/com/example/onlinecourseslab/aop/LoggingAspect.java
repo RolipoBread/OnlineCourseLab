@@ -13,11 +13,11 @@ public class LoggingAspect {
     @Around("execution(* com.example.onlinecourseslab.service.*.*(..))")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        long start = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
 
-        Object result = joinPoint.proceed();
+        final Object result = joinPoint.proceed();
 
-        long time = System.currentTimeMillis() - start;
+        final long time = System.currentTimeMillis() - start;
 
         log.info("{} executed in {} ms",
             joinPoint.getSignature().toShortString(),
