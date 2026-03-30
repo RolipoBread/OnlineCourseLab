@@ -1,8 +1,7 @@
 package com.example.onlinecourseslab.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -10,10 +9,16 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CourseRequestDto {
+    @NotBlank
     private String title;
     private String description;
+    @NotBlank
     private String author;
+    @NotNull
+    @Positive
     private BigDecimal price;
+    @NotNull
+    @Positive
     private Integer lessonCount;
     private Long categoryId;
 }

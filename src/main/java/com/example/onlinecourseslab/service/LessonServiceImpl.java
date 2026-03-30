@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
@@ -23,7 +24,7 @@ import java.util.Map;
 public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository repository;
-    private final Map<LessonCacheKeyDto, List<Lesson>> lessonCache = new HashMap<>();
+    private final Map<LessonCacheKeyDto, List<Lesson>> lessonCache = new ConcurrentHashMap<>();
 
     @Override
     public List<Lesson> getAll() {

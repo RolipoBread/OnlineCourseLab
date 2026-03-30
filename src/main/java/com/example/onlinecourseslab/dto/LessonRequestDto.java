@@ -1,15 +1,18 @@
 package com.example.onlinecourseslab.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LessonRequestDto {
+    @NotBlank
     private String title;
     private String content;
+    @NotNull
+    @Positive
     private Integer orderNumber;
+    @NotNull
     private Long courseId;
 }
