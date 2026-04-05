@@ -1,22 +1,41 @@
 package com.example.onlinecourseslab.aop;
 
-import com.example.onlinecourseslab.service.CategoryService;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
 class LoggingAspectTest {
 
-    @MockBean
-    private CategoryService categoryService; // мокируем сервис
+    @InjectMocks
+    private LoggingAspect aspect;
+
+    @Mock
+    private ProceedingJoinPoint joinPoint;
+
+    @Mock
+    private Signature signature;
 
     @Test
-    void shouldLogExecutionTime() {
-        categoryService.getAll();
-        verify(categoryService, times(1)).getAll();
+    void shouldLogExecutionTime() throws Throwable {
+        // given
+        when(joinPoint.proceed()).thenReturn("result");
+        when(joinPoint.getSignature()).thenReturn(signature);
+        when(signature.toShortString()).thenReturn("testMethod()");
+
+        // when
+        Object result = aspect.logExecutionTime(joinPoint);
+
+        // then
+        assertEquals("result", result);
+        verify(joinPoint).proceed();
     }
 }
