@@ -25,7 +25,6 @@
         <sonar.projectKey>rolipobread_onlinecourseslab</sonar.projectKey>
         <sonar.organization>rolipobread</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.coverage.exclusions>**</sonar.coverage.exclusions>
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
@@ -120,6 +119,17 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <argLine>-Xms512m -Xmx1024m</argLine>
+                </configuration>
             </plugin>
 
             <!-- Sonar Maven Plugin -->

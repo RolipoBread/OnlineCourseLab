@@ -1,5 +1,8 @@
 package com.example.onlinecourseslab.controller;
 
+import com.example.onlinecourseslab.domain.Lesson;
+import com.example.onlinecourseslab.domain.Progress;
+import com.example.onlinecourseslab.domain.User;
 import com.example.onlinecourseslab.dto.ProgressRequestDto;
 import com.example.onlinecourseslab.dto.ProgressResponseDto;
 import com.example.onlinecourseslab.mapper.ProgressMapper;
@@ -15,8 +18,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProgressController.class)
@@ -47,14 +50,39 @@ class ProgressControllerTest {
     void markCompleted_shouldReturnOk() throws Exception {
         ProgressRequestDto request = new ProgressRequestDto(1L, 1L);
 
-        when(userService.getById(any())).thenReturn(null);
-        when(lessonService.getById(any())).thenReturn(null);
-        when(progressService.markCompleted(any(), any())).thenReturn(null);
-        when(mapper.toDto(any())).thenReturn(new ProgressResponseDto());
+        // Создаём реальные объекты
+        User user = new User();
+        user.setId(1L);
+
+        Lesson lesson = new Lesson();
+        lesson.setId(1L);
+
+        Progress progress = new Progress();
+        progress.setId(1L);
+        progress.setStudent(user);
+        progress.setLesson(lesson);
+        progress.setCompleted(true);
+
+        ProgressResponseDto responseDto = new ProgressResponseDto(
+            1L,
+            1L,
+            1L,
+            true
+        );
+
+        // Моки сервисов
+        when(userService.getById(1L)).thenReturn(user);
+        when(lessonService.getById(1L)).thenReturn(lesson);
+        when(progressService.markCompleted(user, lesson)).thenReturn(progress);
+        when(mapper.toDto(progress)).thenReturn(responseDto);
 
         mockMvc.perform(post("/progress/complete")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.studentId").value(1))
+            .andExpect(jsonPath("$.lessonId").value(1))
+            .andExpect(jsonPath("$.completed").value(true));
     }
 }

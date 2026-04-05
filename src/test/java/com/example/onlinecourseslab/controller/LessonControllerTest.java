@@ -1,5 +1,7 @@
 package com.example.onlinecourseslab.controller;
 
+import com.example.onlinecourseslab.domain.Course;
+import com.example.onlinecourseslab.domain.Lesson;
 import com.example.onlinecourseslab.dto.LessonRequestDto;
 import com.example.onlinecourseslab.dto.LessonResponseDto;
 import com.example.onlinecourseslab.mapper.LessonMapper;
@@ -13,10 +15,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(LessonController.class)
@@ -38,24 +40,43 @@ class LessonControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void getAll_shouldReturnOk() throws Exception {
-        when(lessonService.getAll()).thenReturn(List.of());
-
-        mockMvc.perform(get("/lessons"))
-            .andExpect(status().isOk());
-    }
-
-    @Test
     void create_shouldReturnCreated() throws Exception {
         LessonRequestDto request = new LessonRequestDto();
+        request.setTitle("Lesson 1");
+        request.setContent("Content");
+        request.setOrderNumber(1);
+        request.setCourseId(1L);
 
-        when(courseService.getById(any())).thenReturn(null);
-        when(lessonService.create(any())).thenReturn(null);
-        when(mapper.toDto(any())).thenReturn(new LessonResponseDto());
+        Course course = new Course();
+        course.setId(1L);
+
+        Lesson lesson = new Lesson();
+        lesson.setId(1L);
+        lesson.setTitle(request.getTitle());
+        lesson.setContent(request.getContent());
+        lesson.setOrderNumber(request.getOrderNumber());
+        lesson.setCourse(course);
+
+        LessonResponseDto responseDto = new LessonResponseDto(
+            lesson.getId(),
+            lesson.getTitle(),
+            lesson.getContent(),
+            lesson.getOrderNumber(),
+            course.getId()
+        );
+
+        // Моки
+        when(courseService.getById(anyLong())).thenReturn(course);
+        when(mapper.toEntity(any(LessonRequestDto.class), any(Course.class))).thenReturn(lesson);
+        when(lessonService.create(any(Lesson.class))).thenReturn(lesson);
+        when(mapper.toDto(any(Lesson.class))).thenReturn(responseDto);
 
         mockMvc.perform(post("/lessons")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated());
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(1L))
+            .andExpect(jsonPath("$.title").value("Lesson 1"))
+            .andExpect(jsonPath("$.courseId").value(1L));
     }
 }

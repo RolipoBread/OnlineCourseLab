@@ -1,5 +1,6 @@
 package com.example.onlinecourseslab.controller;
 
+import com.example.onlinecourseslab.domain.Course;
 import com.example.onlinecourseslab.dto.CourseRequestDto;
 import com.example.onlinecourseslab.dto.CourseResponseDto;
 import com.example.onlinecourseslab.mapper.CourseMapper;
@@ -11,12 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -40,23 +44,40 @@ class CourseControllerTest {
 
     @Test
     void getCourses_shouldReturnOk() throws Exception {
+        // Мокаем сервис, чтобы возвращал пустую страницу
         when(service.getAll(any())).thenReturn(new PageImpl<>(List.of()));
 
         mockMvc.perform(get("/courses"))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk()); // проверяем только статус
     }
 
     @Test
     void create_shouldReturnCreated() throws Exception {
-        CourseRequestDto request = new CourseRequestDto();
-        CourseResponseDto response = new CourseResponseDto();
+        CourseRequestDto request = new CourseRequestDto(
+            "Java Basics",
+            "Intro course",
+            "John Doe",
+            new BigDecimal("99.99"),
+            10,
+            1L
+        );
 
-        when(service.create(any())).thenReturn(null);
-        when(mapper.toDto(any())).thenReturn(response);
+        Course course = new Course();
+        course.setId(1L);
+        course.setTitle(request.getTitle());
+
+        CourseResponseDto response = new CourseResponseDto();
+        response.setId(1L);
+        response.setTitle(request.getTitle());
+
+        when(service.create(any())).thenReturn(course);
+        when(mapper.toDto(course)).thenReturn(response);
 
         mockMvc.perform(post("/courses")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated());
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.title").value("Java Basics"));
     }
 }

@@ -1,64 +1,64 @@
-package com.example.onlinecourseslab.domain;
+    package com.example.onlinecourseslab.domain;
 
-import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+    import jakarta.persistence.*;
+    import java.math.BigDecimal;
+    import java.util.ArrayList;
+    import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+    import lombok.AllArgsConstructor;
+    import lombok.Data;
+    import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "courses")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Course {
+    @Entity
+    @Table(name = "courses")
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class Course {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @Column(nullable = false)
-    private String title;
+        @Column(nullable = false)
+        private String title;
 
-    @Column(nullable = false)
-    private String author;
+        @Column(nullable = false)
+        private String author;
 
-    @Column(length = 1000)
-    private String description;
+        @Column(length = 1000)
+        private String description;
 
-    @Column(nullable = false)
-    private BigDecimal price;
+        @Column(nullable = false)
+        private BigDecimal price;
 
-    @Column(nullable = false)
-    private Integer lessonCount;
+        @Column(nullable = false)
+        private Integer lessonCount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "category_id")
+        private Category category;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Lesson> lessons = new ArrayList<>();
+        @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        private List<Lesson> lessons = new ArrayList<>();
 
-    public Course(Long id, String title, String author, String description,
-                  BigDecimal price, Integer lessonCount, Category category) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.description = description;
-        this.price = price;
-        this.lessonCount = lessonCount;
-        this.category = category;
+        public Course(Long id, String title, String author, String description,
+                      BigDecimal price, Integer lessonCount, Category category) {
+            this.id = id;
+            this.title = title;
+            this.author = author;
+            this.description = description;
+            this.price = price;
+            this.lessonCount = lessonCount;
+            this.category = category;
+        }
+        public Course(String title, String author, String description,
+                      BigDecimal price, Integer lessonCount, Category category) {
+            this.title = title;
+            this.author = author;
+            this.description = description;
+            this.price = price;
+            this.lessonCount = lessonCount;
+            this.category = category;
+        }
     }
-    public Course(String title, String author, String description,
-                  BigDecimal price, Integer lessonCount, Category category) {
-        this.title = title;
-        this.author = author;
-        this.description = description;
-        this.price = price;
-        this.lessonCount = lessonCount;
-        this.category = category;
-    }
-}
