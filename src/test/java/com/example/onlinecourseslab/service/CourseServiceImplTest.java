@@ -38,7 +38,6 @@ class CourseServiceImplTest {
     @InjectMocks
     private CourseServiceImpl service;
 
-    // ✅ getById SUCCESS
     @Test
     void getById_shouldReturnCourse() {
         Course course = new Course();
@@ -99,7 +98,6 @@ class CourseServiceImplTest {
         assertEquals(1, result.size());
     }
 
-    // ✅ findByCategory
     @Test
     void findByCategory_shouldReturnList() {
         when(repository.findByCategoryName("Java"))
@@ -108,7 +106,6 @@ class CourseServiceImplTest {
         assertEquals(1, result.size());
     }
 
-    // ✅ getAll pageable
     @Test
     void getAllPageable_shouldReturnPage() {
         PageRequest pageable = PageRequest.of(0, 5);
@@ -118,7 +115,6 @@ class CourseServiceImplTest {
         assertEquals(1, result.getContent().size());
     }
 
-    // ✅ delete
     @Test
     void delete_shouldRemoveCourse() {
         Course course = new Course();

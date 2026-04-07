@@ -43,11 +43,10 @@ class CourseControllerTest {
 
     @Test
     void getCourses_shouldReturnOk() throws Exception {
-        // Мокаем сервис, чтобы возвращал пустую страницу
         when(service.getAll(any())).thenReturn(new PageImpl<>(List.of()));
 
         mockMvc.perform(get("/courses"))
-            .andExpect(status().isOk()); // проверяем только статус
+            .andExpect(status().isOk());
     }
 
     @Test

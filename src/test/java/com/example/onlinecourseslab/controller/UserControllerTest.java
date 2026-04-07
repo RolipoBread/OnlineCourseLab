@@ -40,10 +40,10 @@ class UserControllerTest {
         request.setName("John Doe");
         request.setEmail("john@example.com");
         request.setPassword("password123");
-        request.setRole(Role.STUDENT); // ваш enum Role
+        request.setRole(Role.STUDENT);
 
         User user = new User();
-        user.setId(1L); // обязательно задаем id
+        user.setId(1L);
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
@@ -55,7 +55,6 @@ class UserControllerTest {
         responseDto.setEmail(user.getEmail());
         responseDto.setRole(user.getRole());
 
-        // моки сервисов и маппера
         when(service.create(any(User.class))).thenReturn(user);
         when(mapper.toDto(any(User.class))).thenReturn(responseDto);
         when(mapper.toEntity(any(UserRequestDto.class))).thenReturn(user);

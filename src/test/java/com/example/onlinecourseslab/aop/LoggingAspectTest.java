@@ -26,15 +26,12 @@ class LoggingAspectTest {
 
     @Test
     void shouldLogExecutionTime() throws Throwable {
-        // given
         when(joinPoint.proceed()).thenReturn("result");
         when(joinPoint.getSignature()).thenReturn(signature);
         when(signature.toShortString()).thenReturn("testMethod()");
 
-        // when
         Object result = aspect.logExecutionTime(joinPoint);
 
-        // then
         assertEquals("result", result);
         verify(joinPoint).proceed();
     }

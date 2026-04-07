@@ -50,7 +50,6 @@ class ProgressControllerTest {
     void markCompleted_shouldReturnOk() throws Exception {
         ProgressRequestDto request = new ProgressRequestDto(1L, 1L);
 
-        // Создаём реальные объекты
         User user = new User();
         user.setId(1L);
 
@@ -70,7 +69,6 @@ class ProgressControllerTest {
             true
         );
 
-        // Моки сервисов
         when(userService.getById(1L)).thenReturn(user);
         when(lessonService.getById(1L)).thenReturn(lesson);
         when(progressService.markCompleted(user, lesson)).thenReturn(progress);

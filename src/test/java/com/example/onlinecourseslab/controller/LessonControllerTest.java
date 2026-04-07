@@ -65,7 +65,6 @@ class LessonControllerTest {
             course.getId()
         );
 
-        // Моки
         when(courseService.getById(anyLong())).thenReturn(course);
         when(mapper.toEntity(any(LessonRequestDto.class), any(Course.class))).thenReturn(lesson);
         when(lessonService.create(any(Lesson.class))).thenReturn(lesson);
