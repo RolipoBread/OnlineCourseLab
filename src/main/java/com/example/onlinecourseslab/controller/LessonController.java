@@ -88,4 +88,24 @@ public class LessonController {
     public void delete(@PathVariable Long id) {
         lessonService.delete(id);
     }
+
+    // ----------------- BULK-ОПЕРАЦИИ -----------------
+
+    @Operation(summary = "Создать несколько уроков (транзакционно)")
+    @PostMapping("/bulk/transactional")
+    public ResponseEntity<List<LessonResponseDto>> createBulkTransactional(
+        @Valid @RequestBody List<LessonRequestDto> dtos) {
+
+        final List<LessonResponseDto> saved = lessonService.addLessonsBulkTransactional(dtos);
+        return ResponseEntity.status(201).body(saved);
+    }
+
+    @Operation(summary = "Создать несколько уроков (без транзакции)")
+    @PostMapping("/bulk/non-transactional")
+    public ResponseEntity<List<LessonResponseDto>> createBulkNonTransactional(
+        @Valid @RequestBody List<LessonRequestDto> dtos) {
+
+        final List<LessonResponseDto> saved = lessonService.addLessonsBulkNonTransactional(dtos);
+        return ResponseEntity.status(201).body(saved);
+    }
 }

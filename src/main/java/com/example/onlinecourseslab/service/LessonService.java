@@ -2,6 +2,8 @@ package com.example.onlinecourseslab.service;
 
 import com.example.onlinecourseslab.domain.Lesson;
 import com.example.onlinecourseslab.domain.Course;
+import com.example.onlinecourseslab.dto.LessonRequestDto;
+import com.example.onlinecourseslab.dto.LessonResponseDto;
 
 import java.util.List;
 
@@ -12,4 +14,6 @@ public interface LessonService {
     Lesson update(Long id, Lesson lesson);
     void delete(Long id);
     List<Lesson> getByCourse(Course course, int page, int size);
-}
+    List<LessonResponseDto> addLessonsBulkTransactional(List<LessonRequestDto> dtos);
+    List<LessonResponseDto> addLessonsBulkNonTransactional(List<LessonRequestDto> dtos);
+    }

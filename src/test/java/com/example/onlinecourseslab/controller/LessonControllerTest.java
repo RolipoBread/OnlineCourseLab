@@ -15,8 +15,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,12 +42,7 @@ class LessonControllerTest {
 
     @Test
     void create_shouldReturnCreated() throws Exception {
-        LessonRequestDto request = new LessonRequestDto();
-        request.setTitle("Lesson 1");
-        request.setContent("Content");
-        request.setOrderNumber(1);
-        request.setCourseId(1L);
-
+        LessonRequestDto request = new LessonRequestDto("Lesson 1", "Content", 1, 1L);
         Course course = new Course();
         course.setId(1L);
 
@@ -65,7 +61,7 @@ class LessonControllerTest {
             course.getId()
         );
 
-        when(courseService.getById(anyLong())).thenReturn(course);
+        when(courseService.getById(any(Long.class))).thenReturn(course);
         when(mapper.toEntity(any(LessonRequestDto.class), any(Course.class))).thenReturn(lesson);
         when(lessonService.create(any(Lesson.class))).thenReturn(lesson);
         when(mapper.toDto(any(Lesson.class))).thenReturn(responseDto);
@@ -77,5 +73,39 @@ class LessonControllerTest {
             .andExpect(jsonPath("$.id").value(1L))
             .andExpect(jsonPath("$.title").value("Lesson 1"))
             .andExpect(jsonPath("$.courseId").value(1L));
+    }
+
+    @Test
+    void createBulkTransactional_shouldReturnCreated() throws Exception {
+        LessonRequestDto dto = new LessonRequestDto("Lesson 2", "Content 2", 2, 1L);
+        LessonResponseDto responseDto = new LessonResponseDto(2L, "Lesson 2", "Content 2", 2, 1L);
+
+        when(lessonService.addLessonsBulkTransactional(any(List.class)))
+            .thenReturn(List.of(responseDto));
+
+        mockMvc.perform(post("/lessons/bulk/transactional")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(List.of(dto))))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$[0].id").value(2L))
+            .andExpect(jsonPath("$[0].title").value("Lesson 2"))
+            .andExpect(jsonPath("$[0].courseId").value(1L));
+    }
+
+    @Test
+    void createBulkNonTransactional_shouldReturnCreated() throws Exception {
+        LessonRequestDto dto = new LessonRequestDto("Lesson 3", "Content 3", 3, 1L);
+        LessonResponseDto responseDto = new LessonResponseDto(3L, "Lesson 3", "Content 3", 3, 1L);
+
+        when(lessonService.addLessonsBulkNonTransactional(any(List.class)))
+            .thenReturn(List.of(responseDto));
+
+        mockMvc.perform(post("/lessons/bulk/non-transactional")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(List.of(dto))))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$[0].id").value(3L))
+            .andExpect(jsonPath("$[0].title").value("Lesson 3"))
+            .andExpect(jsonPath("$[0].courseId").value(1L));
     }
 }
