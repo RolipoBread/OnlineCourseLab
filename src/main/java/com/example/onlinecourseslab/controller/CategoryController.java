@@ -38,14 +38,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(mapper.toDto(service.getById(id)));
     }
-
-    @Operation(summary = "Получить категорию по имени")
-    @GetMapping
-    public ResponseEntity<CategoryResponseDto> getByName(@RequestParam String name) {
-        final Category category = service.findByName(name);
-        return ResponseEntity.ok(mapper.toDto(category));
-    }
-
+    
     @Operation(summary = "Создать новую категорию")
     @PostMapping
     public ResponseEntity<CategoryResponseDto> create(
