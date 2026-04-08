@@ -4,7 +4,9 @@ import com.example.onlinecourseslab.domain.Category;
 import com.example.onlinecourseslab.domain.Course;
 import com.example.onlinecourseslab.dto.CourseRequestDto;
 import com.example.onlinecourseslab.mapper.CourseMapper;
-import com.example.onlinecourseslab.repository.CourseRepository;import org.junit.jupiter.api.Test;
+import com.example.onlinecourseslab.repository.CourseRepository;
+import com.example.onlinecourseslab.repository.ProgressRepository;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,6 +27,9 @@ class CourseServiceImplTest {
 
     @Mock
     private CourseRepository repository;
+
+    @Mock
+    private ProgressRepository progressRepository;
 
     @Mock
     private CategoryService categoryService;

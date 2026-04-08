@@ -6,6 +6,7 @@ import com.example.onlinecourseslab.domain.User;
 import com.example.onlinecourseslab.dto.ProgressRequestDto;
 import com.example.onlinecourseslab.dto.ProgressResponseDto;
 import com.example.onlinecourseslab.mapper.ProgressMapper;
+import com.example.onlinecourseslab.service.CourseService;
 import com.example.onlinecourseslab.service.LessonService;
 import com.example.onlinecourseslab.service.ProgressService;
 import com.example.onlinecourseslab.service.UserService;
@@ -35,6 +36,9 @@ class ProgressControllerTest {
 
     @MockBean
     private LessonService lessonService;
+
+    @MockBean
+    private CourseService courseService;
 
     @MockBean
     private ProgressMapper mapper;
