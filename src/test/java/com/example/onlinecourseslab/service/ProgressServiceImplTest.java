@@ -113,7 +113,7 @@ class ProgressServiceImplTest {
             () -> service.getByStudentAndLesson(user, lesson));
     }
 
-    // deleteByLessons
+    // deleteByLessons - непустой список
     @Test
     void deleteByLessons_shouldDeleteAllProgressesForLessons() {
         Lesson lesson1 = new Lesson();
@@ -129,7 +129,7 @@ class ProgressServiceImplTest {
 
         service.deleteByLessons(List.of(lesson1, lesson2));
 
-        // Используем ArgumentCaptor для безопасной проверки вызовов deleteAll
+        // Проверяем вызовы deleteAll
         ArgumentCaptor<List<Progress>> captor = ArgumentCaptor.forClass(List.class);
         verify(repository, times(2)).deleteAll(captor.capture());
 
@@ -138,7 +138,20 @@ class ProgressServiceImplTest {
         assertTrue(deletedLists.contains(List.of(p2)));
     }
 
-    // deleteByStudent
+    // deleteByLessons - пустой список
+    @Test
+    void deleteByLessons_emptyList_shouldDoNothing() {
+        Lesson lesson = new Lesson();
+        lesson.setId(1L);
+
+        when(repository.findByLessonId(1L)).thenReturn(List.of());
+
+        service.deleteByLessons(List.of(lesson));
+
+        verify(repository, never()).deleteAll(any());
+    }
+
+    // deleteByStudent - непустой список
     @Test
     void deleteByStudent_shouldDeleteAllProgresses() {
         User user = new User();
@@ -150,5 +163,17 @@ class ProgressServiceImplTest {
         service.deleteByStudent(user);
 
         verify(repository).deleteAll(List.of(p1, p2));
+    }
+
+    // deleteByStudent - пустой список
+    @Test
+    void deleteByStudent_emptyList_shouldDoNothing() {
+        User user = new User();
+
+        when(repository.findByStudent(user)).thenReturn(List.of());
+
+        service.deleteByStudent(user);
+
+        verify(repository, never()).deleteAll(any());
     }
 }

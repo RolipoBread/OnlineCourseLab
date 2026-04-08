@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -171,5 +172,21 @@ class CourseServiceImplTest {
         Page<Course> result = service.getAll(PageRequest.of(0, 10));
 
         assertEquals(1, result.getContent().size());
+    }
+
+    @Test
+    void getAll_withPageable_shouldReturnPage() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Course course1 = new Course();
+        Course course2 = new Course();
+        Page<Course> page = new PageImpl<>(List.of(course1, course2), pageable, 2);
+
+        when(repository.findAll(pageable)).thenReturn(page);
+
+        Page<Course> result = service.getAll(pageable);
+
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        verify(repository).findAll(pageable);
     }
 }
