@@ -13,9 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
-
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -149,11 +149,33 @@ class LessonServiceImplTest {
     }
 
     @Test
+    void addLessonsBulkNonTransactional_shouldThrow_whenCourseNotFound() {
+        // подготовка
+        when(courseService.getById(course.getId())).thenReturn(null);
+
+        List<LessonRequestDto> dtos = List.of(lessonDto); // отдельно
+
+        // единственный метод вызываем в assertThrows
+        ResponseStatusException exception = assertThrows(
+            ResponseStatusException.class,
+            () -> service.addLessonsBulkNonTransactional(dtos)
+        );
+
+        assertTrue(exception.getMessage().contains("Course not found"));
+    }
+
+    @Test
     void addLessonsBulkTransactional_shouldThrow_whenCourseNotFound() {
         when(courseService.getById(course.getId())).thenReturn(null);
 
-        assertThrows(ResponseStatusException.class,
-            () -> service.addLessonsBulkTransactional(List.of(lessonDto)));
+        List<LessonRequestDto> dtos = List.of(lessonDto);
+
+        ResponseStatusException exception = assertThrows(
+            ResponseStatusException.class,
+            () -> service.addLessonsBulkTransactional(dtos)
+        );
+
+        assertTrue(exception.getMessage().contains("Course not found"));
     }
 
     @Test
@@ -163,10 +185,15 @@ class LessonServiceImplTest {
         when(repository.save(lesson)).thenReturn(lesson);
         when(mapper.toDto(lesson)).thenReturn(lessonResponseDto);
 
-        List<LessonResponseDto> result = service.addLessonsBulkNonTransactional(List.of(lessonDto));
+        List<LessonRequestDto> inputList = new ArrayList<>();
+        inputList.add(lessonDto);
+
+        List<LessonResponseDto> result = service.addLessonsBulkNonTransactional(inputList);
 
         assertEquals(1, result.size());
         assertEquals(lessonResponseDto, result.get(0));
         verify(repository).save(lesson);
     }
+
+
 }
