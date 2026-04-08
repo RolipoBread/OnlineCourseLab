@@ -4,7 +4,6 @@ import com.example.onlinecourseslab.domain.Course;
 import com.example.onlinecourseslab.dto.CourseRequestDto;
 import com.example.onlinecourseslab.dto.CourseResponseDto;
 import com.example.onlinecourseslab.mapper.CourseMapper;
-import com.example.onlinecourseslab.service.CategoryService;
 import com.example.onlinecourseslab.service.CourseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -35,8 +34,6 @@ class CourseControllerTest {
     @MockBean
     private CourseMapper mapper;
 
-    @MockBean
-    private CategoryService categoryService;
 
     @Autowired
     private ObjectMapper objectMapper;
