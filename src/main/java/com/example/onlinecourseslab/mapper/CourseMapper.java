@@ -25,7 +25,7 @@
             public CourseResponseDto toDto(Course course) {
                 final CourseResponseDto dto = new CourseResponseDto();
 
-                dto.setId(course.getId());
+                dto.setId(course.getId()); 
                 dto.setTitle(course.getTitle());
                 dto.setAuthor(course.getAuthor());
                 dto.setPrice(course.getPrice());

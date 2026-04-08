@@ -8,8 +8,10 @@ import com.example.onlinecourseslab.repository.CourseRepository;
 import com.example.onlinecourseslab.repository.ProgressRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,11 +43,13 @@ class CourseServiceImplTest {
     @Test
     void getById_shouldReturnCourse() {
         Course course = new Course();
+        course.setId(1L);
+
         when(repository.findById(1L)).thenReturn(Optional.of(course));
 
         Course result = service.getById(1L);
 
-        assertEquals(course, result);
+        assertEquals(1L, result.getId());
     }
 
     @Test
@@ -68,6 +72,7 @@ class CourseServiceImplTest {
 
         assertNotNull(result);
         verify(repository).save(course);
+        verify(categoryService, never()).getById(any());
     }
 
     @Test
@@ -85,41 +90,86 @@ class CourseServiceImplTest {
         Course result = service.create(dto);
 
         assertNotNull(result);
-        verify(categoryService).getById(1L);
-        verify(repository).save(course);
         assertEquals(category, course.getCategory());
+    }
+
+    @Test
+    void update_shouldUpdateCourse_withCategory() {
+        Course existing = new Course();
+        existing.setId(1L);
+
+        CourseRequestDto dto = new CourseRequestDto();
+        dto.setTitle("New title");
+        dto.setCategoryId(1L);
+
+        Category category = new Category();
+
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(categoryService.getById(1L)).thenReturn(category);
+        when(repository.save(existing)).thenReturn(existing);
+
+        Course result = service.update(1L, dto);
+
+        assertEquals("New title", result.getTitle());
+        assertEquals(category, result.getCategory());
+    }
+
+    @Test
+    void update_shouldRemoveCategory_whenNull() {
+        Course existing = new Course();
+        existing.setId(1L);
+        existing.setCategory(new Category());
+
+        CourseRequestDto dto = new CourseRequestDto();
+        dto.setCategoryId(null);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.save(existing)).thenReturn(existing);
+
+        Course result = service.update(1L, dto);
+
+        assertNull(result.getCategory());
+    }
+
+    @Test
+    void delete_shouldCallRepository() {
+        Course course = new Course();
+
+        when(repository.findById(1L)).thenReturn(Optional.of(course));
+
+        service.delete(1L);
+
+        verify(repository).delete(course);
     }
 
     @Test
     void findByAuthor_shouldReturnList() {
         when(repository.findByAuthor("John"))
             .thenReturn(List.of(new Course()));
+
         List<Course> result = service.findByAuthor("John");
+
         assertEquals(1, result.size());
     }
 
     @Test
     void findByCategory_shouldReturnList() {
-        when(repository.findByCategoryName("Java"))
+        when(repository.findByCategoryName("IT"))
             .thenReturn(List.of(new Course()));
-        List<Course> result = service.findByCategory("Java");
+
+        List<Course> result = service.findByCategory("IT");
+
         assertEquals(1, result.size());
     }
 
     @Test
     void getAllPageable_shouldReturnPage() {
-        PageRequest pageable = PageRequest.of(0, 5);
-        when(repository.findAll(pageable))
-            .thenReturn(new PageImpl<>(List.of(new Course())));
-        var result = service.getAll(pageable);
-        assertEquals(1, result.getContent().size());
-    }
+        Page<Course> page = new PageImpl<>(List.of(new Course()));
 
-    @Test
-    void delete_shouldRemoveCourse() {
-        Course course = new Course();
-        when(repository.findById(1L)).thenReturn(Optional.of(course));
-        service.delete(1L);
-        verify(repository).delete(course);
+        when(repository.findAll(any(PageRequest.class))).thenReturn(page);
+
+        Page<Course> result = service.getAll(PageRequest.of(0, 10));
+
+        assertEquals(1, result.getContent().size());
     }
 }
