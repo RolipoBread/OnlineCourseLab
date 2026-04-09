@@ -89,11 +89,6 @@ public class LessonServiceImpl implements LessonService {
         return lessons;
     }
 
-    // ----------------- BULK ОПЕРАЦИИ -----------------
-
-    /**
-     * Транзакционная bulk-операция: либо все уроки создаются, либо откат при ошибке.
-     */
     @Override
     @Transactional
     public List<LessonResponseDto> addLessonsBulkTransactional(List<LessonRequestDto> dtos) {
