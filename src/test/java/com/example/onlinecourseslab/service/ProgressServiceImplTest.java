@@ -23,7 +23,6 @@ class ProgressServiceImplTest {
     @InjectMocks
     private ProgressServiceImpl service;
 
-    // markCompleted - новый прогресс
     @Test
     void markCompleted_shouldSaveProgress() {
         User user = new User();
@@ -40,7 +39,6 @@ class ProgressServiceImplTest {
         verify(repository).save(any());
     }
 
-    // markCompleted - уже существующий прогресс
     @Test
     void markCompleted_existingProgress_shouldSetCompletedTrue() {
         User user = new User();
@@ -57,7 +55,6 @@ class ProgressServiceImplTest {
         verify(repository).save(existingProgress);
     }
 
-    // getByStudent
     @Test
     void getByStudent_shouldReturnProgressList() {
         User user = new User();
@@ -70,7 +67,6 @@ class ProgressServiceImplTest {
         assertEquals(2, result.size());
     }
 
-    // getByStudentAndCourse
     @Test
     void getByStudentAndCourse_shouldReturnProgressList() {
         User user = new User();
@@ -85,7 +81,6 @@ class ProgressServiceImplTest {
         assertEquals(progresses, result);
     }
 
-    // getByStudentAndLesson - найдено
     @Test
     void getByStudentAndLesson_existingProgress_shouldReturnProgress() {
         User user = new User();
@@ -100,7 +95,6 @@ class ProgressServiceImplTest {
         assertEquals(progress, result);
     }
 
-    // getByStudentAndLesson - не найдено
     @Test
     void getByStudentAndLesson_notFound_shouldThrow() {
         User user = new User();
@@ -113,7 +107,6 @@ class ProgressServiceImplTest {
             () -> service.getByStudentAndLesson(user, lesson));
     }
 
-    // deleteByLessons - непустой список
     @Test
     void deleteByLessons_shouldDeleteAllProgressesForLessons() {
         Lesson lesson1 = new Lesson();
@@ -129,7 +122,6 @@ class ProgressServiceImplTest {
 
         service.deleteByLessons(List.of(lesson1, lesson2));
 
-        // Проверяем вызовы deleteAll
         ArgumentCaptor<List<Progress>> captor = ArgumentCaptor.forClass(List.class);
         verify(repository, times(2)).deleteAll(captor.capture());
 
@@ -138,7 +130,6 @@ class ProgressServiceImplTest {
         assertTrue(deletedLists.contains(List.of(p2)));
     }
 
-    // deleteByLessons - пустой список
     @Test
     void deleteByLessons_emptyList_shouldDoNothing() {
         Lesson lesson = new Lesson();
@@ -151,7 +142,6 @@ class ProgressServiceImplTest {
         verify(repository, never()).deleteAll(any());
     }
 
-    // deleteByStudent - непустой список
     @Test
     void deleteByStudent_shouldDeleteAllProgresses() {
         User user = new User();
@@ -165,7 +155,6 @@ class ProgressServiceImplTest {
         verify(repository).deleteAll(List.of(p1, p2));
     }
 
-    // deleteByStudent - пустой список
     @Test
     void deleteByStudent_emptyList_shouldDoNothing() {
         User user = new User();

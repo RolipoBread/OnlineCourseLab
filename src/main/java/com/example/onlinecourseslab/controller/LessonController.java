@@ -89,8 +89,6 @@ public class LessonController {
         lessonService.delete(id);
     }
 
-    // ----------------- BULK-ОПЕРАЦИИ -----------------
-
     @Operation(summary = "Создать несколько уроков (транзакционно)")
     @PostMapping("/bulk/transactional")
     public ResponseEntity<List<LessonResponseDto>> createBulkTransactional(

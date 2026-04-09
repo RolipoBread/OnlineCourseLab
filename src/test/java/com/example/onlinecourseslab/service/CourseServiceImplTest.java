@@ -41,7 +41,6 @@ class CourseServiceImplTest {
     @InjectMocks
     private CourseServiceImpl service;
 
-    // --- getAll() без аргументов ---
     @Test
     void getAll_shouldReturnList() {
         Course course1 = new Course();
@@ -57,7 +56,6 @@ class CourseServiceImplTest {
         verify(repository).findAll();
     }
 
-    // --- getById ---
     @Test
     void getById_shouldReturnCourse() {
         Course course = new Course();
@@ -78,7 +76,6 @@ class CourseServiceImplTest {
             () -> service.getById(1L));
     }
 
-    // --- create ---
     @Test
     void create_shouldSaveCourse_withoutCategory() {
         CourseRequestDto dto = new CourseRequestDto();
@@ -112,7 +109,6 @@ class CourseServiceImplTest {
         assertEquals(category, course.getCategory());
     }
 
-    // --- update ---
     @Test
     void update_shouldUpdateCourse_withCategory() {
         Course existing = new Course();
@@ -151,7 +147,6 @@ class CourseServiceImplTest {
         assertNull(result.getCategory());
     }
 
-    // --- delete ---
     @Test
     void delete_shouldCallRepository() {
         Course course = new Course();
@@ -163,7 +158,6 @@ class CourseServiceImplTest {
         verify(repository).delete(course);
     }
 
-    // --- findByAuthor ---
     @Test
     void findByAuthor_shouldReturnList() {
         when(repository.findByAuthor("John"))
@@ -174,7 +168,6 @@ class CourseServiceImplTest {
         assertEquals(1, result.size());
     }
 
-    // --- findByCategory ---
     @Test
     void findByCategory_shouldReturnList() {
         when(repository.findByCategoryName("IT"))
@@ -185,7 +178,6 @@ class CourseServiceImplTest {
         assertEquals(1, result.size());
     }
 
-    // --- getAll(Pageable) ---
     @Test
     void getAllPageable_shouldReturnPage() {
         Page<Course> page = new PageImpl<>(List.of(new Course()));

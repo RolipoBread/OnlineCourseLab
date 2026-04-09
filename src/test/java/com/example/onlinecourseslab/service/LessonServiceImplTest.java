@@ -58,7 +58,6 @@ class LessonServiceImplTest {
         lessonResponseDto = new LessonResponseDto(1L, "title", "content", 1, course.getId());
     }
 
-    // ----------------- Основные методы -----------------
     @Test
     void getAll_shouldReturnLessons() {
         when(repository.findAll()).thenReturn(List.of(lesson));
@@ -133,7 +132,6 @@ class LessonServiceImplTest {
         verify(repository, times(1)).findByCourse(eq(course), any(Pageable.class));
     }
 
-    // ----------------- Bulk операции -----------------
     @Test
     void addLessonsBulkTransactional_shouldSaveAllLessons() {
         when(courseService.getById(course.getId())).thenReturn(course);
@@ -150,12 +148,10 @@ class LessonServiceImplTest {
 
     @Test
     void addLessonsBulkNonTransactional_shouldThrow_whenCourseNotFound() {
-        // подготовка
         when(courseService.getById(course.getId())).thenReturn(null);
 
         List<LessonRequestDto> dtos = List.of(lessonDto); // отдельно
 
-        // единственный метод вызываем в assertThrows
         ResponseStatusException exception = assertThrows(
             ResponseStatusException.class,
             () -> service.addLessonsBulkNonTransactional(dtos)
