@@ -132,55 +132,32 @@ class LessonServiceImplTest {
         verify(repository, times(1)).findByCourse(eq(course), any(Pageable.class));
     }
 
-    // ---------- BULK ----------
-
     @Test
     void addLessonsBulkTransactional_shouldSaveAllLessons() {
         when(courseService.getById(course.getId())).thenReturn(course);
         when(mapper.toEntity(lessonDto, course)).thenReturn(lesson);
-        when(repository.saveAll(anyList())).thenReturn(List.of(lesson));
+        when(repository.save(lesson)).thenReturn(lesson);
         when(mapper.toDto(lesson)).thenReturn(lessonResponseDto);
 
-        List<LessonRequestDto> dtos = List.of(lessonDto);
-
-        List<LessonResponseDto> result = service.addLessonsBulkTransactional(dtos);
+        List<LessonResponseDto> result = service.addLessonsBulkTransactional(List.of(lessonDto));
 
         assertEquals(1, result.size());
         assertEquals(lessonResponseDto, result.get(0));
-
-        verify(repository).saveAll(anyList());
-    }
-
-    @Test
-    void addLessonsBulkNonTransactional_shouldSaveAllLessons() {
-        when(courseService.getById(course.getId())).thenReturn(course);
-        when(mapper.toEntity(lessonDto, course)).thenReturn(lesson);
-        when(repository.saveAll(anyList())).thenReturn(List.of(lesson));
-        when(mapper.toDto(lesson)).thenReturn(lessonResponseDto);
-
-        List<LessonRequestDto> inputList = new ArrayList<>();
-        inputList.add(lessonDto);
-
-        List<LessonResponseDto> result = service.addLessonsBulkNonTransactional(inputList);
-
-        assertEquals(1, result.size());
-        assertEquals(lessonResponseDto, result.get(0));
-
-        verify(repository).saveAll(anyList());
+        verify(repository).save(lesson);
     }
 
     @Test
     void addLessonsBulkNonTransactional_shouldThrow_whenCourseNotFound() {
         when(courseService.getById(course.getId())).thenReturn(null);
 
-        List<LessonRequestDto> dtos = List.of(lessonDto);
+        List<LessonRequestDto> dtos = List.of(lessonDto); // отдельно
 
         ResponseStatusException exception = assertThrows(
             ResponseStatusException.class,
             () -> service.addLessonsBulkNonTransactional(dtos)
         );
 
-        assertTrue(exception.getReason().contains("Course not found"));
+        assertTrue(exception.getMessage().contains("Course not found"));
     }
 
     @Test
@@ -194,6 +171,25 @@ class LessonServiceImplTest {
             () -> service.addLessonsBulkTransactional(dtos)
         );
 
-        assertTrue(exception.getReason().contains("Course not found"));
+        assertTrue(exception.getMessage().contains("Course not found"));
     }
+
+    @Test
+    void addLessonsBulkNonTransactional_shouldSaveAllLessons() {
+        when(courseService.getById(course.getId())).thenReturn(course);
+        when(mapper.toEntity(lessonDto, course)).thenReturn(lesson);
+        when(repository.save(lesson)).thenReturn(lesson);
+        when(mapper.toDto(lesson)).thenReturn(lessonResponseDto);
+
+        List<LessonRequestDto> inputList = new ArrayList<>();
+        inputList.add(lessonDto);
+
+        List<LessonResponseDto> result = service.addLessonsBulkNonTransactional(inputList);
+
+        assertEquals(1, result.size());
+        assertEquals(lessonResponseDto, result.get(0));
+        verify(repository).save(lesson);
+    }
+
+
 }
