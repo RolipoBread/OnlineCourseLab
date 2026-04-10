@@ -92,32 +92,29 @@ public class LessonServiceImpl implements LessonService {
     @Override
     @Transactional
     public List<LessonResponseDto> addLessonsBulkTransactional(List<LessonRequestDto> dtos) {
-        return dtos.stream()
-            .map(dto -> Optional.ofNullable(courseService.getById(dto.getCourseId()))
-                .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Course not found with id " + dto.getCourseId())))
-            .map(course -> dtos.stream()
-                .filter(d -> d.getCourseId().equals(course.getId()))
-                .map(d -> mapper.toEntity(d, course))
-                .toList())
-            .flatMap(List::stream)
-            .map(repository::save)
-            .map(mapper::toDto)
-            .toList();
+        return saveLessonsBulk(dtos);
     }
 
     @Override
     public List<LessonResponseDto> addLessonsBulkNonTransactional(List<LessonRequestDto> dtos) {
-        return dtos.stream()
-            .map(dto -> Optional.ofNullable(courseService.getById(dto.getCourseId()))
-                .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Course not found with id " + dto.getCourseId())))
-            .map(course -> dtos.stream()
-                .filter(d -> d.getCourseId().equals(course.getId()))
-                .map(d -> mapper.toEntity(d, course))
-                .toList())
-            .flatMap(List::stream)
-            .map(repository::save)
+        return saveLessonsBulk(dtos);
+    }
+
+    private List<LessonResponseDto> saveLessonsBulk(List<LessonRequestDto> dtos) {
+
+        List<Lesson> lessons = dtos.stream()
+            .map(dto -> {
+                Course course = Optional.ofNullable(courseService.getById(dto.getCourseId()))
+                    .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Course not found with id " + dto.getCourseId()));
+
+                return mapper.toEntity(dto, course);
+            })
+            .toList();
+
+        List<Lesson> savedLessons = repository.saveAll(lessons);
+
+        return savedLessons.stream()
             .map(mapper::toDto)
             .toList();
     }
