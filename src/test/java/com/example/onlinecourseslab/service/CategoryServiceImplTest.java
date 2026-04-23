@@ -34,7 +34,7 @@ class CategoryServiceImplTest {
         List<Category> result = service.getAll();
 
         assertEquals(2, result.size());
-        verify(repository).findAll(); // покрываем вызов repository.findAll()
+        verify(repository).findAll();
     }
 
     @Test
@@ -78,7 +78,7 @@ class CategoryServiceImplTest {
 
         assertEquals("New", result.getName());
         assertEquals("New description", result.getDescription());
-        verify(repository).save(existing); // покрываем repository.save(existing)
+        verify(repository).save(existing);
     }
 
     @Test
@@ -95,7 +95,7 @@ class CategoryServiceImplTest {
 
         service.delete(1L);
 
-        verify(repository).deleteById(1L); // покрываем repository.deleteById()
+        verify(repository).deleteById(1L);
     }
 
     @Test
@@ -113,7 +113,7 @@ class CategoryServiceImplTest {
         Category result = service.findByName("Math");
 
         assertEquals(category, result);
-        verify(repository).findByName("Math"); // покрываем repository.findByName()
+        verify(repository).findByName("Math");
     }
 
     @Test

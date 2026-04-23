@@ -27,8 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository repository;
-    private final CourseService courseService; // нужен для поиска курса по ID
-    private final LessonMapper mapper;         // нужен для конвертации DTO
+    private final CourseService courseService;
+    private final LessonMapper mapper;
     private final Map<LessonCacheKeyDto, List<Lesson>> lessonCache = new ConcurrentHashMap<>();
 
     @Override

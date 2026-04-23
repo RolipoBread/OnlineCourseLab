@@ -2,15 +2,12 @@ package com.example.onlinecourseslab.controller;
 
 import com.example.onlinecourseslab.domain.Progress;
 import com.example.onlinecourseslab.domain.User;
-import com.example.onlinecourseslab.domain.Lesson;
 import com.example.onlinecourseslab.domain.Course;
 import com.example.onlinecourseslab.dto.ProgressRequestDto;
 import com.example.onlinecourseslab.dto.ProgressResponseDto;
 import com.example.onlinecourseslab.mapper.ProgressMapper;
-import com.example.onlinecourseslab.service.ProgressService;
-import com.example.onlinecourseslab.service.UserService;
-import com.example.onlinecourseslab.service.LessonService;
-import com.example.onlinecourseslab.service.CourseService;
+import com.example.onlinecourseslab.service.*;
+import com.example.onlinecourseslab.domain.TaskStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,17 +28,26 @@ public class ProgressController {
     private final LessonService lessonService;
     private final CourseService courseService;
     private final ProgressMapper mapper;
+    private final AsyncProgressService asyncProgressService;
+    private final TaskService taskService;
 
-    @Operation(summary = "Отметить урок как завершённый")
+    @Operation(
+        summary = "Асинхронно отметить урок как завершённый",
+        description = "Создаёт фоновую задачу для отметки урока как завершённого. Возвращает taskId для отслеживания статуса."
+    )
     @PostMapping("/complete")
-    public ResponseEntity<ProgressResponseDto> markCompleted(
+    public ResponseEntity<String> markCompletedAsync(
         @Valid @RequestBody ProgressRequestDto dto) {
 
-        final User student = userService.getById(dto.getStudentId());
-        final Lesson lesson = lessonService.getById(dto.getLessonId());
-        final Progress progress = progressService.markCompleted(student, lesson);
+        String taskId = taskService.createTask();
 
-        return ResponseEntity.ok(mapper.toDto(progress));
+        asyncProgressService.markCompletedAsync(
+            taskId,
+            dto.getStudentId(),
+            dto.getLessonId()
+        );
+
+        return ResponseEntity.accepted().body(taskId);
     }
 
     @Operation(summary = "Получить прогресс студента по всем урокам")
@@ -76,4 +82,13 @@ public class ProgressController {
 
         return ResponseEntity.ok(dtos);
     }
+    @Operation(
+        summary = "Получить статус асинхронной задачи",
+        description = "Позволяет узнать текущий статус выполнения задачи по её taskId"
+    )
+    @GetMapping("/tasks/{taskId}")
+    public ResponseEntity<TaskStatus> getTaskStatus(@PathVariable String taskId) {
+        return ResponseEntity.ok(taskService.getStatus(taskId));
+    }
+
 }
