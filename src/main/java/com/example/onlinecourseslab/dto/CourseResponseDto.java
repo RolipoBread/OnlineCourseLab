@@ -13,8 +13,10 @@
         private Long id;
         private String title;
         private String author;
+        private String description;
         private BigDecimal price;
         private Integer lessonCount;
         private Long categoryId;
         private String categoryName;
+        private String categoryColor;
     }

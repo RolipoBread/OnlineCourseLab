@@ -20,6 +20,7 @@ public interface ProgressRepository extends JpaRepository<Progress, Long> {
     List<Progress> findByStudent(User student);
     List<Progress> findByStudentAndLessonIn(User student, List<Lesson> lessons);
     Optional<Progress> findByStudentAndLesson(User student, Lesson lesson);
+    List<Progress> findByLessonCourse(Course course);
     List<Progress> findByStudentAndLessonCourse(User student, Course course);
     @EntityGraph(value = "Progress.lesson.course", type = EntityGraph.EntityGraphType.LOAD)
     List<Progress> findAll();

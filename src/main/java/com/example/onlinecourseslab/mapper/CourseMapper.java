@@ -28,12 +28,14 @@
                 dto.setId(course.getId()); 
                 dto.setTitle(course.getTitle());
                 dto.setAuthor(course.getAuthor());
+                dto.setDescription(course.getDescription());
                 dto.setPrice(course.getPrice());
                 dto.setLessonCount(course.getLessonCount());
 
                 if (course.getCategory() != null) {
                     dto.setCategoryId(course.getCategory().getId());
                     dto.setCategoryName(course.getCategory().getName());
+                    dto.setCategoryColor(course.getCategory().getColor());
                 }
 
                 return dto;

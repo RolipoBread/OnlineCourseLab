@@ -11,6 +11,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,16 +29,6 @@ public class LessonController {
     private final CourseService courseService;
     private final LessonMapper mapper;
 
-    @Operation(summary = "Получить список всех уроков")
-    @GetMapping
-    public ResponseEntity<List<LessonResponseDto>> getAll() {
-        final List<LessonResponseDto> list = lessonService.getAll()
-            .stream()
-            .map(mapper::toDto)
-            .toList();
-        return ResponseEntity.ok(list);
-    }
-
     @Operation(summary = "Получить урок по ID")
     @GetMapping("/{id}")
     public ResponseEntity<LessonResponseDto> getById(@PathVariable Long id) {
@@ -44,20 +37,21 @@ public class LessonController {
 
     @Operation(summary = "Получить уроки по курсу с пагинацией")
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<LessonResponseDto>> getByCourse(
+    public ResponseEntity<Page<LessonResponseDto>> getByCourse(
         @PathVariable Long courseId,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "5") int size) {
+        @RequestParam(defaultValue = "5") int size
+    ) {
 
-        final Course course = courseService.getById(courseId);
+        Course course = courseService.getById(courseId);
 
-        final List<LessonResponseDto> list = lessonService
-            .getByCourse(course, page, size)
-            .stream()
-            .map(mapper::toDto)
-            .toList();
+        Pageable pageable = PageRequest.of(page, size);
 
-        return ResponseEntity.ok(list);
+        Page<Lesson> lessonsPage = lessonService.getByCourse(course, pageable);
+
+        Page<LessonResponseDto> dtoPage = lessonsPage.map(mapper::toDto);
+
+        return ResponseEntity.ok(dtoPage);
     }
 
     @Operation(summary = "Создать новый урок")

@@ -60,12 +60,17 @@ class LessonServiceImplTest {
 
     @Test
     void getAll_shouldReturnLessons() {
-        when(repository.findAll()).thenReturn(List.of(lesson));
 
-        List<Lesson> result = service.getAll();
+        Pageable pageable = Pageable.unpaged();
 
-        assertEquals(1, result.size());
-        verify(repository).findAll();
+        Page<Lesson> page = new PageImpl<>(List.of(lesson));
+
+        when(repository.findAll(pageable)).thenReturn(page);
+
+        Page<Lesson> result = service.getAll(pageable);
+
+        assertEquals(1, result.getContent().size());
+        verify(repository).findAll(pageable);
     }
 
     @Test
@@ -120,16 +125,22 @@ class LessonServiceImplTest {
 
     @Test
     void getByCourse_shouldUseRepository_thenCache() {
+
         Page<Lesson> page = new PageImpl<>(List.of(lesson));
 
-        when(repository.findByCourse(eq(course), any(Pageable.class))).thenReturn(page);
+        when(repository.findByCourse(eq(course), any(Pageable.class)))
+            .thenReturn(page);
 
-        List<Lesson> firstCall = service.getByCourse(course, 0, 10);
-        List<Lesson> secondCall = service.getByCourse(course, 0, 10);
+        Pageable pageable = PageRequest.of(0, 10);
 
-        assertEquals(1, firstCall.size());
-        assertEquals(firstCall, secondCall);
-        verify(repository, times(1)).findByCourse(eq(course), any(Pageable.class));
+        Page<Lesson> firstCall = service.getByCourse(course, pageable);
+        Page<Lesson> secondCall = service.getByCourse(course, pageable);
+
+        assertEquals(1, firstCall.getContent().size());
+        assertEquals(firstCall.getContent(), secondCall.getContent());
+
+        verify(repository, times(1))
+            .findByCourse(eq(course), any(Pageable.class));
     }
 
     @Test

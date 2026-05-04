@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 public class CourseRequestDto {
     @NotBlank
     private String title;
+    @NotBlank
     private String description;
     @NotBlank
     private String author;
@@ -20,5 +21,6 @@ public class CourseRequestDto {
     @NotNull
     @Positive
     private Integer lessonCount;
+
     private Long categoryId;
 }

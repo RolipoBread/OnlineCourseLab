@@ -1,7 +1,7 @@
 package com.example.onlinecourseslab.service;
 
-import com.example.onlinecourseslab.domain.Lesson;
 import com.example.onlinecourseslab.domain.Course;
+import com.example.onlinecourseslab.domain.Lesson;
 import com.example.onlinecourseslab.dto.LessonCacheKeyDto;
 import com.example.onlinecourseslab.dto.LessonRequestDto;
 import com.example.onlinecourseslab.dto.LessonResponseDto;
@@ -9,7 +9,7 @@ import com.example.onlinecourseslab.mapper.LessonMapper;
 import com.example.onlinecourseslab.repository.LessonRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -29,11 +28,12 @@ public class LessonServiceImpl implements LessonService {
     private final LessonRepository repository;
     private final CourseService courseService;
     private final LessonMapper mapper;
-    private final Map<LessonCacheKeyDto, List<Lesson>> lessonCache = new ConcurrentHashMap<>();
+
+    private final Map<LessonCacheKeyDto, Page<Lesson>> lessonCache = new ConcurrentHashMap<>();
 
     @Override
-    public List<Lesson> getAll() {
-        return repository.findAll();
+    public Page<Lesson> getAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Override
@@ -42,24 +42,28 @@ public class LessonServiceImpl implements LessonService {
             .orElseThrow(() ->
                 new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
-                    "Lesson not found with id " + id));
+                    "Lesson not found with id " + id
+                )
+            );
     }
 
     @Override
     public Lesson create(Lesson lesson) {
-        final Lesson saved = repository.save(lesson);
+        Lesson saved = repository.save(lesson);
         lessonCache.clear();
         return saved;
     }
 
     @Override
     public Lesson update(Long id, Lesson lesson) {
-        final Lesson existing = getById(id);
+        Lesson existing = getById(id);
+
         existing.setTitle(lesson.getTitle());
         existing.setContent(lesson.getContent());
         existing.setOrderNumber(lesson.getOrderNumber());
         existing.setCourse(lesson.getCourse());
-        final Lesson saved = repository.save(existing);
+
+        Lesson saved = repository.save(existing);
         lessonCache.clear();
         return saved;
     }
@@ -70,9 +74,17 @@ public class LessonServiceImpl implements LessonService {
         lessonCache.clear();
     }
 
+    // =========================
+    // 🔥 FIXED PAGINATION + CACHE
+    // =========================
     @Override
-    public List<Lesson> getByCourse(Course course, int page, int size) {
-        final LessonCacheKeyDto key = new LessonCacheKeyDto(course.getId(), page, size);
+    public Page<Lesson> getByCourse(Course course, Pageable pageable) {
+
+        LessonCacheKeyDto key = new LessonCacheKeyDto(
+            course.getId(),
+            pageable.getPageNumber(),
+            pageable.getPageSize()
+        );
 
         if (lessonCache.containsKey(key)) {
             log.info("Cache hit");
@@ -80,27 +92,27 @@ public class LessonServiceImpl implements LessonService {
         }
 
         log.info("SQL hit");
-        final Pageable pageable = PageRequest.of(page, size);
-        final List<Lesson> lessons = repository
-            .findByCourse(course, pageable)
-            .getContent();
 
-        lessonCache.put(key, lessons);
-        return lessons;
+        Page<Lesson> page = repository.findByCourse(course, pageable);
+
+        lessonCache.put(key, page);
+
+        return page;
     }
+
+    // =========================
+    // BULK (оставил, но упростил)
+    // =========================
 
     @Override
     @Transactional
     public List<LessonResponseDto> addLessonsBulkTransactional(List<LessonRequestDto> dtos) {
+
         return dtos.stream()
-            .map(dto -> Optional.ofNullable(courseService.getById(dto.getCourseId()))
-                .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Course not found with id " + dto.getCourseId())))
-            .map(course -> dtos.stream()
-                .filter(d -> d.getCourseId().equals(course.getId()))
-                .map(d -> mapper.toEntity(d, course))
-                .toList())
-            .flatMap(List::stream)
+            .map(dto -> {
+                Course course = courseService.getById(dto.getCourseId());
+                return mapper.toEntity(dto, course);
+            })
             .map(repository::save)
             .map(mapper::toDto)
             .toList();
@@ -108,15 +120,12 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<LessonResponseDto> addLessonsBulkNonTransactional(List<LessonRequestDto> dtos) {
+
         return dtos.stream()
-            .map(dto -> Optional.ofNullable(courseService.getById(dto.getCourseId()))
-                .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Course not found with id " + dto.getCourseId())))
-            .map(course -> dtos.stream()
-                .filter(d -> d.getCourseId().equals(course.getId()))
-                .map(d -> mapper.toEntity(d, course))
-                .toList())
-            .flatMap(List::stream)
+            .map(dto -> {
+                Course course = courseService.getById(dto.getCourseId());
+                return mapper.toEntity(dto, course);
+            })
             .map(repository::save)
             .map(mapper::toDto)
             .toList();

@@ -30,6 +30,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

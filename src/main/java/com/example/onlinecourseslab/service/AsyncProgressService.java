@@ -25,7 +25,7 @@ public class AsyncProgressService {
             User student = userService.getById(studentId);
             Lesson lesson = lessonService.getById(lessonId);
 
-            Thread.sleep(3000);
+            Thread.sleep(10000);
 
             progressService.markCompleted(student, lesson);
 

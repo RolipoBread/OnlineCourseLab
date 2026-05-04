@@ -29,7 +29,6 @@ public class CategoryServiceImpl implements CategoryService {
                     "Category not found with id " + id));
     }
 
-    @Override
     public Category create(Category category) {
         return repository.save(category);
     }
@@ -37,8 +36,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category update(Long id, Category category) {
         final Category existing = getById(id);
+
         existing.setName(category.getName());
         existing.setDescription(category.getDescription());
+        existing.setColor(category.getColor());
+
         return repository.save(existing);
     }
 

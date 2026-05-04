@@ -1,5 +1,6 @@
 package com.example.onlinecourseslab.controller;
 
+import com.example.onlinecourseslab.domain.Role;
 import com.example.onlinecourseslab.domain.User;
 import com.example.onlinecourseslab.dto.UserRequestDto;
 import com.example.onlinecourseslab.dto.UserResponseDto;
@@ -9,8 +10,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,6 +36,17 @@ public class UserController {
         return ResponseEntity.ok(list);
     }
 
+    @Operation(summary = "Получить всех преподавателей")
+    @GetMapping("/teachers")
+    public ResponseEntity<List<UserResponseDto>> getTeachers() {
+        final List<UserResponseDto> list = service.findByRole("TEACHER")
+            .stream()
+            .map(mapper::toDto)
+            .toList();
+
+        return ResponseEntity.ok(list);
+    }
+
     @Operation(summary = "Получить пользователя по ID")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getById(
@@ -47,8 +61,10 @@ public class UserController {
     public ResponseEntity<UserResponseDto> create(
         @Valid @RequestBody UserRequestDto dto) {
 
-        final User saved =
-            service.create(mapper.toEntity(dto));
+        User user = mapper.toEntity(dto);
+        user.setRole(Role.STUDENT);
+
+        final User saved = service.create(user);
 
         return ResponseEntity.status(201)
             .body(mapper.toDto(saved));
@@ -85,4 +101,37 @@ public class UserController {
 
         return ResponseEntity.ok(list);
     }
+
+    @Operation(summary = "Загрузить аватар пользователя")
+    @PostMapping(value = "/{id}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponseDto> uploadAvatar(
+        @PathVariable Long id,
+        @RequestParam("file") MultipartFile file
+    ) {
+        User user = service.updateAvatar(id, file);
+        return ResponseEntity.ok(mapper.toDto(user));
+    }
+
+
+    @Operation(summary = "Записать пользователя на курс")
+    @PutMapping("/{userId}/courses/{courseId}")
+    public ResponseEntity<UserResponseDto> addCourseToUser(
+        @PathVariable Long userId,
+        @PathVariable Long courseId
+    ) {
+        User user = service.addCourse(userId, courseId);
+        return ResponseEntity.ok(mapper.toDto(user));
+    }
+
+
+    @Operation(summary = "Удалить курс из списка пользователя (отписка)")
+    @DeleteMapping("/{userId}/courses/{courseId}")
+    public ResponseEntity<UserResponseDto> removeCourseFromUser(
+        @PathVariable Long userId,
+        @PathVariable Long courseId
+    ) {
+        User user = service.removeCourse(userId, courseId);
+        return ResponseEntity.ok(mapper.toDto(user));
+    }
+
 }

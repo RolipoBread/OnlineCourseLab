@@ -10,4 +10,6 @@ public class CategoryRequestDto {
     @NotBlank
     private String name;
     private String description;
+    private String color;
+
 }

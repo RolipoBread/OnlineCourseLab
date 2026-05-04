@@ -12,6 +12,7 @@ public class CategoryMapper {
         final Category category = new Category();
         category.setName(dto.getName());
         category.setDescription(dto.getDescription());
+        category.setColor(dto.getColor());
         return category;
     }
 
@@ -20,6 +21,7 @@ public class CategoryMapper {
         dto.setId(category.getId());
         dto.setName(category.getName());
         dto.setDescription(category.getDescription());
+        dto.setColor(category.getColor());
         return dto;
     }
 }

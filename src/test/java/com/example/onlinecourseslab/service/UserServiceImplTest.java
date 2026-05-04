@@ -2,10 +2,12 @@ package com.example.onlinecourseslab.service;
 
 import com.example.onlinecourseslab.domain.Role;
 import com.example.onlinecourseslab.domain.User;
+import com.example.onlinecourseslab.repository.CourseRepository;
 import com.example.onlinecourseslab.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,6 +26,12 @@ class UserServiceImplTest {
     @Mock
     private ProgressService progressService;
 
+    @Mock
+    private CourseRepository courseRepository;
+
+    @Mock
+    private FileStorageService fileStorageService;
+
     @InjectMocks
     private UserServiceImpl service;
 
@@ -33,16 +41,19 @@ class UserServiceImplTest {
             new User("Alice", "a@mail.com", "123", Role.STUDENT),
             new User("Bob", "b@mail.com", "456", Role.TEACHER)
         );
+
         when(repository.findAll()).thenReturn(users);
 
         List<User> result = service.getAll();
 
         assertEquals(2, result.size());
+        verify(repository).findAll();
     }
 
     @Test
     void getById_shouldReturnUser() {
         User user = new User("Alice", "a@mail.com", "123", Role.STUDENT);
+
         when(repository.findById(1L)).thenReturn(Optional.of(user));
 
         User result = service.getById(1L);
@@ -54,12 +65,14 @@ class UserServiceImplTest {
     void getById_shouldThrowIfNotFound() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(ResponseStatusException.class, () -> service.getById(1L));
+        assertThrows(ResponseStatusException.class,
+            () -> service.getById(1L));
     }
 
     @Test
     void create_shouldSaveUser() {
         User user = new User("Alice", "a@mail.com", "123", Role.STUDENT);
+
         when(repository.save(user)).thenReturn(user);
 
         User result = service.create(user);
@@ -80,20 +93,24 @@ class UserServiceImplTest {
 
         assertEquals("New", result.getName());
         assertEquals(Role.TEACHER, result.getRole());
+
         verify(repository).save(existing);
     }
 
     @Test
     void update_shouldThrowIfNotFound() {
         User update = new User("New", "new@mail.com", "456", Role.TEACHER);
+
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(ResponseStatusException.class, () -> service.update(1L, update));
+        assertThrows(ResponseStatusException.class,
+            () -> service.update(1L, update));
     }
 
     @Test
     void delete_shouldCallDependencies() {
         User user = new User("Alice", "a@mail.com", "123", Role.STUDENT);
+
         when(repository.findById(1L)).thenReturn(Optional.of(user));
 
         service.delete(1L);
@@ -106,13 +123,16 @@ class UserServiceImplTest {
     void delete_shouldThrowIfUserNotFound() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(ResponseStatusException.class, () -> service.delete(1L));
+        assertThrows(ResponseStatusException.class,
+            () -> service.delete(1L));
     }
 
     @Test
     void findByEmail_shouldReturnUser() {
         User user = new User("Alice", "a@mail.com", "123", Role.STUDENT);
-        when(repository.findByEmail("a@mail.com")).thenReturn(Optional.of(user));
+
+        when(repository.findByEmail("a@mail.com"))
+            .thenReturn(Optional.of(user));
 
         User result = service.findByEmail("a@mail.com");
 
@@ -121,9 +141,11 @@ class UserServiceImplTest {
 
     @Test
     void findByEmail_shouldThrowIfNotFound() {
-        when(repository.findByEmail("a@mail.com")).thenReturn(Optional.empty());
+        when(repository.findByEmail("a@mail.com"))
+            .thenReturn(Optional.empty());
 
-        assertThrows(ResponseStatusException.class, () -> service.findByEmail("a@mail.com"));
+        assertThrows(ResponseStatusException.class,
+            () -> service.findByEmail("a@mail.com"));
     }
 
     @Test
@@ -132,7 +154,9 @@ class UserServiceImplTest {
             new User("Alice", "a@mail.com", "123", Role.STUDENT),
             new User("Bob", "b@mail.com", "456", Role.STUDENT)
         );
-        when(repository.findByRoleNative("STUDENT")).thenReturn(users);
+
+        when(repository.findByRoleNative("STUDENT"))
+            .thenReturn(users);
 
         List<User> result = service.findByRole("STUDENT");
 

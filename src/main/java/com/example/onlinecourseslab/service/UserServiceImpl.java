@@ -1,11 +1,15 @@
 package com.example.onlinecourseslab.service;
 
+import com.example.onlinecourseslab.domain.Course;
 import com.example.onlinecourseslab.domain.User;
+import com.example.onlinecourseslab.dto.UserRequestDto;
+import com.example.onlinecourseslab.repository.CourseRepository;
 import com.example.onlinecourseslab.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -16,6 +20,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
     private final ProgressService progressService;
+    private final FileStorageService fileStorageService;
+    private final CourseRepository courseRepository;
 
     @Override
     public List<User> getAll() {
@@ -72,4 +78,47 @@ public class UserServiceImpl implements UserService {
         return repository.findByRoleNative(role);
     }
 
+    @Transactional
+    @Override
+    public User updateAvatar(Long userId, MultipartFile file) {
+
+        User user = getById(userId);
+
+        String avatarUrl = fileStorageService.save(file);
+
+        user.setAvatarUrl(avatarUrl);
+
+        return repository.save(user);
+    }
+
+    @Override
+    public User addCourse(Long userId, Long courseId) {
+
+        User user = getById(userId);
+        Course course = courseRepository.findById(courseId)
+            .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        user.getCourses().add(course);
+
+        return repository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public User removeCourse(Long userId, Long courseId) {
+
+        User user = getById(userId);
+
+        boolean removed = user.getCourses()
+            .removeIf(course -> course.getId().equals(courseId));
+
+        if (!removed) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Course not found in user subscriptions"
+            );
+        }
+
+        return repository.save(user);
+    }
 }
