@@ -1,0 +1,120 @@
+.course-page {
+    margin-top: 30px;
+}
+
+/* HERO */
+.course-hero {
+    padding: 40px;
+    border-radius: 18px;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.course-hero h1 {
+    font-size: 32px;
+}
+
+.course-hero p {
+    margin-top: 10px;
+    opacity: 0.8;
+}
+
+/* LESSON GRID */
+.lesson-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 1000px) {
+    .lesson-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .lesson-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* LESSON CARD */
+.lesson-card {
+    background: #0f172a;
+    border-radius: 14px;
+    padding: 20px;
+
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.lesson-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+.lesson-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.lesson-desc {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+/* PAGINATION */
+.pagination {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;   /* 🔥 центрирование */
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.pagination button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+}
+
+.pagination button:hover {
+    background: #222;
+}
+
+.lesson-hover-wrapper {
+    position: relative;
+}
+
+.lesson-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    transition: 0.2s;
+    z-index: 10;
+}
+
+.lesson-hover-wrapper:hover .lesson-actions {
+    opacity: 1;
+}
+
+.lesson-actions button {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: none;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    cursor: pointer;
+}
+
+.lesson-actions button:hover {
+    background: #3b82f6;
+}

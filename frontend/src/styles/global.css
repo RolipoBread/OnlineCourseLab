@@ -1,0 +1,765 @@
+/* =========================
+   RESET
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #0b1220;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+/* =========================
+   LAYOUT
+========================= */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px;
+}
+
+.section {
+    width: 100%;
+    padding: 40px 0;
+}
+
+.section-dark {
+    background: #0b1220;
+}
+
+.section-black {
+    background: #000;
+}
+
+.title {
+    margin-bottom: 20px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    width: 100%;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.logo:hover {
+    color: #3b82f6;
+    cursor: pointer;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-left: auto;
+}
+
+.nav span {
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.nav span:hover {
+    opacity: 1;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.login-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #fff;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.login-btn:hover {
+    border: none;
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
+.register-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #3b82f6;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.register-btn:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
+.header-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin: 20px 0;
+}
+
+/* =========================
+   LOG
+========================= */
+
+.profile-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.profile-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: 0.3s;
+}
+.profile-circle:hover{
+    transform: scale(1.1);
+}
+
+.profile-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-circle span {
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.profile-text {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 4px;
+}
+
+.profile-wrapper:hover .profile-circle {
+    background: #666;
+}
+
+/* =========================
+   ADS
+========================= */
+
+.roadmap-section .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 60px;
+}
+
+.roadmap-card {
+    width: 100%;
+    height: 550px;
+    background: #fff;
+    color: #0b1220;
+    margin: 0 70px;
+
+    border-radius: 20px;
+    overflow: hidden;
+
+    display: flex;
+    align-items: stretch;
+    position: relative;
+}
+
+.roadmap-left {
+    flex: 0 0 50%;
+    position: relative;
+
+    background-image: url("/ads/ads-2.jpg");
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+
+    padding: 24px;
+}
+
+.roadmap-left::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+            to top,
+            rgba(0,0,0,0.6),
+            rgba(0,0,0,0.1)
+    );
+
+    z-index: 1;
+}
+
+.roadmap-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.roadmap-image {
+    width: 100%;
+    height: 410px;
+    border-radius: 12px;
+
+    background: #e5e7eb;
+}
+
+.start-btn {
+    position: relative;
+    z-index: 2; /* выше overlay */
+
+    padding: 18px 22px;
+
+    background: rgba(59,130,246,0.95);
+    color: white;
+
+    border: none;
+    border-radius: 12px;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    transition: 0.25s;
+}
+
+.start-btn:hover {
+    transform: translateY(-3px);
+    background: rgba(37,99,235,1);
+}
+
+.arrow {
+    font-size: 20px;
+}
+
+.roadmap-title {
+    text-align: right;
+}
+
+.roadmap-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    margin-top: 20px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    position: relative;
+    padding-left: 80px;
+}
+
+.step-number {
+    width: 52px;
+    height: 52px;
+
+    border-radius: 50%;
+    background: #3b82f6;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+
+    position: absolute;
+    left: 0;
+}
+
+.step::before {
+    content: "";
+    position: absolute;
+    left: 25.5px;
+    top: 60px;
+    width: 1px;
+    height: 40px;
+    background: #d1d5db;
+}
+
+.roadmap-right .title{
+    font-size: 50px;
+}
+
+.step-text {
+    color:#313335;
+    font-size: 40px;
+    line-height: 1.4;
+}
+
+.step:last-child::before {
+    display: none;
+}
+
+.step-line {
+    width: 1px;
+    height: 30px;
+    background: rgba(255,255,255,0.2);
+    margin-left: 17px;
+}
+
+.step-content h3 {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    text-align: center;
+    margin: 40px 0;
+}
+.hero-section {
+    display: flex;
+    align-items: center;      /* вертикаль */
+    justify-content: center;  /* горизонталь */
+    text-align: center;
+    min-height: 60vh;         /* чтобы был “hero”-эффект */
+}
+
+.hero-section .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero h1 {
+    font-size: 42px;
+}
+
+/* =========================
+   TEACHERS (SWIPER)
+========================= */
+
+.teachers {
+    margin-top: 40px;
+}
+
+.teachers-swiper {
+    margin-top: 20px;
+}
+
+.teachers-slider-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+/* сам слайдер занимает всё место */
+.teachers-slider {
+    flex: 1;
+    min-width: 0; /* важно для swiper */
+}
+
+.slider-arrow {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 22px;
+    color: white;
+
+    cursor: pointer;
+    transition: 0.2s;
+
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.slider-arrow:hover {
+    background: rgba(255,255,255,0.18);
+}
+
+/* общие кнопки */
+.custom-prev,
+.custom-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 44px;
+    height: 44px;
+
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 22px;
+    color: white;
+
+    cursor: pointer;
+    z-index: 10;
+
+    transition: 0.2s;
+    backdrop-filter: blur(6px);
+}
+
+/* hover эффект */
+.custom-prev:hover,
+.custom-next:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* позиционирование */
+.custom-prev {
+    left: -30px;
+}
+
+.custom-next {
+    right:-30px;
+}
+
+/* CARD */
+.teacher-card {
+    height: 360px;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+}
+
+/* IMAGE */
+.teacher-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* OVERLAY */
+.teacher-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 20px;
+
+    background: linear-gradient(
+            to top,
+            rgba(0,0,0,0.85),
+            transparent
+    );
+
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.teacher-card:hover .teacher-overlay {
+    opacity: 1;
+}
+
+.teacher-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.teacher-role {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* =========================
+   CATEGORIES
+========================= */
+
+.categories {
+    margin-top: 50px;
+}
+
+.category-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.category-btn {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* hover */
+.category-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* active (выбранная категория) */
+.category-btn.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+/* =========================
+   COURSES
+========================= */
+
+.courses {
+    margin-top: 50px;
+}
+
+.course-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 20px;
+}
+
+/* планшеты */
+@media (max-width: 1100px) {
+    .course-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* телефоны */
+@media (max-width: 700px) {
+    .course-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* CARD */
+.course-card {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    background: #0f172a;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.course-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.course-card:hover {
+    transform: translateY(-6px);
+}
+
+/* IMAGE */
+.course-image {
+    position: relative;
+    height: 100px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+}
+
+/* DARK GRADIENT OVER IMAGE */
+.course-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.85),
+            rgba(0, 0, 0, 0.2),
+            transparent
+    );
+    display: flex;
+    align-items: flex-end;
+    padding: 12px;
+}
+
+/* TITLE ON IMAGE */
+.course-title-on-image {
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* CONTENT */
+.course-content {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* TEACHER */
+.course-teacher {
+    font-size: 13px;
+    color: #cbd5e1;
+}
+
+.course-teacher span {
+    opacity: 0.6;
+}
+
+/* DESCRIPTION */
+.course-desc {
+    font-size: 13px;
+    color: #94a3b8;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3; /* сколько строк показывать */
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+/* PRICE */
+.course-bottom {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+}
+
+.course-price {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+}
+
+.courses-loading {
+    margin-top: 40px;
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 18px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+/* основной футер */
+.footer {
+    background: #000;
+    color: white;
+    padding: 25px 60px;
+
+    display: flex;
+    flex-direction: column; /* 🔥 главное */
+    gap: 20px;
+}
+
+/* верхняя часть */
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* логотип */
+.footer-logo {
+    font-size: 22px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+}
+
+/* контакты */
+.footer-contacts {
+    display: flex;
+    gap: 20px;
+}
+
+/* ссылки */
+.footer-item {
+    font-size: 14px;
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.footer-item:hover {
+    color: white;
+}
+
+.footer-disclaimer {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1.4;
+
+    margin-top: 10px;
+
+    text-align: center;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}

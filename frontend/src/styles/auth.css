@@ -1,0 +1,88 @@
+/* контейнер-карточка */
+.auth-container {
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #0b1220;
+}
+
+/* сама рамка */
+.auth-box {
+    width: 340px;
+    padding: 30px;
+
+    border-radius: 16px;
+    background: #0f172a;
+
+    border: 1px solid rgba(59,130,246,0.3);
+
+    /* 🔥 лёгкое свечение */
+    box-shadow:
+            0 0 20px rgba(59,130,246,0.15),
+            0 0 40px rgba(59,130,246,0.05);
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    color: white;
+}
+
+.auth-box h1 {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* inputs */
+.auth-input {
+    padding: 10px 12px;
+    border-radius: 8px;
+
+    border: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: white;
+}
+
+/* кнопка */
+.auth-btn {
+    padding: 10px;
+    border-radius: 8px;
+
+    border: none;
+    background: #3b82f6;
+    color: white;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.auth-btn:hover {
+    background: #2563eb;
+}
+
+/* нижний текст */
+.auth-footer {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #94a3b8;
+    text-align: center;
+}
+
+/* ссылка */
+.auth-link {
+    color: #3b82f6;
+    margin-left: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.auth-link:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+}
