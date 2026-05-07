@@ -1,0 +1,6 @@
+target
+.idea
+.git
+node_modules
+logs
+uploads

@@ -1,6 +1,3 @@
-.course-page {
-    margin-top: 30px;
-}
 
 /* HERO */
 .course-hero {
@@ -67,7 +64,7 @@
 .pagination {
     margin-top: 30px;
     display: flex;
-    justify-content: center;   /* 🔥 центрирование */
+    justify-content: center;
     align-items: center;
     gap: 15px;
     width: 100%;

@@ -26,7 +26,7 @@ export default function CoursePage() {
         orderNumber: 1
     });
 
-    const size = 5;
+    const size = 6;
 
     useEffect(() => {
         loadCourse();
@@ -186,7 +186,7 @@ export default function CoursePage() {
 
                 <span>Страница {page + 1} / {totalPages}</span>
 
-                <button onClick={() => setPage(p => p + 1)}>
+                <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages - 1}>
                     Вперёд
                 </button>
             </div>

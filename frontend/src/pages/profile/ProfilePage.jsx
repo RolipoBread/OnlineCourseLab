@@ -262,16 +262,20 @@ export default function ProfilePage() {
 
                             <div key={course.id} className="course-hover-wrapper">
 
-                                {user.role === "TEACHER" && (
-                                    <div className="course-actions">
+                                <div className="course-actions">
+                                    {user.role === "TEACHER" && (
                                         <button onClick={() => {
                                             setEditingCourse(course);
                                             setShowEditCourse(true);
-                                        }}>✏</button>
+                                        }}>
+                                            ✏
+                                        </button>
+                                    )}
 
-                                        <button onClick={() => handleDeleteCourse(course.id)}>🗑</button>
-                                    </div>
-                                )}
+                                    <button onClick={() => handleDeleteCourse(course.id)}>
+                                        🗑
+                                    </button>
+                                </div>
 
                                 <Link to={`/courses/${course.id}`} className="course-card-link">
 
@@ -294,7 +298,6 @@ export default function ProfilePage() {
                                             <div>{course.author}</div>
                                             <div className="course-desc">{course.description}</div>
                                         </div>
-
                                     </div>
 
                                 </Link>
