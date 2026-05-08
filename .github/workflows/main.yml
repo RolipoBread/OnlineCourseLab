@@ -11,9 +11,6 @@ jobs:
   # =========================
   # 1. СБОРКА (BUILD)
   # =========================
-  # =========================
-  # 1. СБОРКА (BUILD)
-  # =========================
   build:
     runs-on: ubuntu-latest
     steps:
@@ -35,10 +32,29 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Check pom.xml exists
+        run: |
+          if [ -f "pom.xml" ]; then
+            echo "pom.xml found"
+            cat pom.xml | head -20
+          else
+            echo "ERROR: pom.xml not found!"
+            ls -la
+            exit 1
+          fi
+
       - name: Build and package project
-        run: mvn clean package -DskipTests   # <-- ИСПРАВЛЕНО: package вместо compile
+        run: mvn clean package -DskipTests -e -X
+        continue-on-error: false
+
+      - name: List target directory
+        if: always()
+        run: |
+          echo "Target directory contents:"
+          ls -la target/ || echo "target directory does not exist"
 
       - name: Upload build artifacts
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: built-artifacts
