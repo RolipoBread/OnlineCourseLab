@@ -11,6 +11,9 @@ jobs:
   # =========================
   # 1. СБОРКА (BUILD)
   # =========================
+  # =========================
+  # 1. СБОРКА (BUILD)
+  # =========================
   build:
     runs-on: ubuntu-latest
     steps:
@@ -32,8 +35,8 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build project
-        run: mvn clean compile -DskipTests
+      - name: Build and package project
+        run: mvn clean package -DskipTests   # <-- ИСПРАВЛЕНО: package вместо compile
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -41,7 +44,7 @@ jobs:
           name: built-artifacts
           path: target/*.jar
           if-no-files-found: error
-
+          
   # =========================
   # 2. ТЕСТЫ (TESTS) с PostgreSQL
   # =========================
