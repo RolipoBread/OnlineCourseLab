@@ -40,66 +40,70 @@ jobs:
         with:
           name: built-artifacts
           path: target/*.jar
+          if-no-files-found: error  # <-- добавить, чтобы сразу видеть, если файлов нет
 
-  # =========================
-  # 2. ТЕСТЫ (TESTS) с PostgreSQL
-  # =========================
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: university
-          POSTGRES_USER: app_user
-          POSTGRES_PASSWORD: 1234
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U app_user"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+    # =========================
+    # 2. ТЕСТЫ (TESTS) с PostgreSQL
+    # =========================
+    test:
+      runs-on: ubuntu-latest
+      needs: build  # <-- обязательно дожидаемся build
+      services:
+        postgres:
+          image: postgres:15
+          env:
+            POSTGRES_DB: university
+            POSTGRES_USER: app_user
+            POSTGRES_PASSWORD: 1234
+          ports:
+            - 5432:5432
+          options: >-
+            --health-cmd="pg_isready -U app_user"
+            --health-interval=10s
+            --health-timeout=5s
+            --health-retries=5
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: 'temurin'
+        - name: Set up JDK 17
+          uses: actions/setup-java@v4
+          with:
+            java-version: 17
+            distribution: 'temurin'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+        - name: Cache Maven packages
+          uses: actions/cache@v4
+          with:
+            path: ~/.m2
+            key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+            restore-keys: ${{ runner.os }}-m2
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: built-artifacts
-          path: target/
+        - name: Download build artifacts
+          uses: actions/download-artifact@v4
+          with:
+            name: built-artifacts
+            path: target/   # <-- скачиваем в ту же папку, где ожидает Maven
 
-      - name: Run tests
-        run: mvn test
-        env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: university
-          DB_USER: app_user
-          DB_PASSWORD: 1234
+        - name: List files in target (debug)
+          run: ls -la target/   # <-- отладка: убедиться, что jar скачался
 
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: target/surefire-reports/
+        - name: Run tests
+          run: mvn test  # <-- теперь .jar уже лежит в target/
+          env:
+            DB_HOST: localhost
+            DB_PORT: 5432
+            DB_NAME: university
+            DB_USER: app_user
+            DB_PASSWORD: 1234
+
+        - name: Upload test reports
+          if: always()
+          uses: actions/upload-artifact@v4
+          with:
+            name: test-reports
+            path: target/surefire-reports/
 
   # =========================
   # 3. РАЗВЕРТЫВАНИЕ (DEPLOY)
