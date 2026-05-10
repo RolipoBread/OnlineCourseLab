@@ -110,7 +110,16 @@ public class LessonServiceImpl implements LessonService {
 
         return dtos.stream()
             .map(dto -> {
+
                 Course course = courseService.getById(dto.getCourseId());
+
+                if (course == null) {
+                    throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Course not found"
+                    );
+                }
+
                 return mapper.toEntity(dto, course);
             })
             .map(repository::save)
@@ -123,7 +132,16 @@ public class LessonServiceImpl implements LessonService {
 
         return dtos.stream()
             .map(dto -> {
+
                 Course course = courseService.getById(dto.getCourseId());
+
+                if (course == null) {
+                    throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Course not found"
+                    );
+                }
+
                 return mapper.toEntity(dto, course);
             })
             .map(repository::save)
