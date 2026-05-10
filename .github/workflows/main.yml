@@ -106,7 +106,7 @@ jobs:
             echo "Attempt $i..."
 
             RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
-            https://onlinecourselab.onrender.com/actuator/health)
+            https://onlinecourselab.onrender.com)
 
             if [ "$RESPONSE" -eq 200 ]; then
               echo "Application is healthy"
