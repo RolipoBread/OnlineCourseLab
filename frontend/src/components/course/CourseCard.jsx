@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { api } from "../../api/axios";
 
 export default function CourseCard({ course }) {
     const navigate = useNavigate();
@@ -9,26 +10,21 @@ export default function CourseCard({ course }) {
 
     const handleClick = async () => {
 
-        // 1. если не залогинен → login
         if (!user) {
             navigate("/login");
             return;
         }
 
         try {
-            // 2. записать на курс
-            await fetch(
-                `http://localhost:8080/users/${user.id}/courses/${course.id}`,
-                { method: "PUT" }
+            // ENROLL
+            await api.put(
+                `/users/${user.id}/courses/${course.id}`
             );
 
-            // 3. обновить пользователя
-            const res = await fetch(`http://localhost:8080/users/${user.id}`);
-            const fullUser = await res.json();
+            // refresh user
+            const res = await api.get(`/users/${user.id}`);
+            loginUser(res.data);
 
-            loginUser(fullUser);
-
-            // 4. перейти в курс
             navigate(`/courses/${course.id}`);
 
         } catch (e) {
@@ -38,8 +34,6 @@ export default function CourseCard({ course }) {
 
     return (
         <div className="course-card" onClick={handleClick}>
-
-            {/* IMAGE + TITLE */}
             <div
                 className="course-image"
                 style={{ backgroundColor: color }}
@@ -51,9 +45,7 @@ export default function CourseCard({ course }) {
                 </div>
             </div>
 
-            {/* CONTENT */}
             <div className="course-content">
-
                 <div className="course-teacher">
                     <span>Преподаватель:</span> {course.author}
                 </div>
@@ -67,9 +59,7 @@ export default function CourseCard({ course }) {
                         ${course.price}
                     </div>
                 </div>
-
             </div>
-
         </div>
     );
 }
