@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/counter-demo")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 @Tag(name = "Counter Demo", description = "Демонстрация потокобезопасного и непотокобезопасного счётчика")
 public class CounterController {
 

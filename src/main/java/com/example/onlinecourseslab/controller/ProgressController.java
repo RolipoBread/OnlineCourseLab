@@ -21,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/progress")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ProgressController {
 
     private final ProgressService progressService;

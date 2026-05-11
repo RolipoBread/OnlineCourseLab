@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
     // REFRESH USER (ВАЖНО для courses)
     const refreshUser = async (id) => {
         try {
-            const res = await fetch(`https://onlinecourselab.onrender.com/users/${id}`);
+            const res = await fetch(`https://onlinecourselab.onrender.com/users/${id}`)     ;
             const data = await res.json();
 
             setUserState(data);
