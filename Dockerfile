@@ -24,10 +24,8 @@ FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
-# backend jar
 COPY --from=backend-build /app/target/*.jar app.jar
 
-# frontend build -> Spring static (если используешь)
 COPY --from=frontend-build /frontend/dist ./static
 
 ENV SPRING_PROFILES_ACTIVE=prod
