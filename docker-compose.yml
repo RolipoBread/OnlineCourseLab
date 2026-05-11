@@ -21,9 +21,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DB_USERNAME: admin
-      DB_PASSWORD: admin
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/university
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
     depends_on:
       postgres:
         condition: service_healthy

@@ -30,13 +30,12 @@ export function AuthProvider({ children }) {
     // REFRESH USER (ВАЖНО для courses)
     const refreshUser = async (id) => {
         try {
-            const res = await fetch(`https://onlinecourselab.onrender.com/users/${id}`)     ;
-            const data = await res.json();
+            const res = await api.get(`/users/${id}`);
 
-            setUserState(data);
-            setUser(data);
+            setUserState(res.data);
+            setUser(res.data);
 
-            return data;
+            return res.data;
         } catch (e) {
             console.error("refreshUser failed", e);
         }
