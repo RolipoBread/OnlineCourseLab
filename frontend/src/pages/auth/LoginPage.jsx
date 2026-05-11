@@ -15,8 +15,7 @@ export default function LoginPage() {
         try {
             const res = await login({ email, password });
 
-            const userRes = await fetch(`http://localhost:8080/users/${res.data.id}`);
-            const fullUser = await userRes.json();
+            const fullUser = res.data;
 
             loginUser(fullUser);
 
