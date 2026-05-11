@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getUser, setUser, clearUser } from "../utils/auth";
+import { api } from "../api/axios";
 
 const AuthContext = createContext();
 
@@ -8,26 +9,22 @@ export function AuthProvider({ children }) {
     const [user, setUserState] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // загрузка при старте приложения
     useEffect(() => {
         const storedUser = getUser();
         setUserState(storedUser);
         setLoading(false);
     }, []);
 
-    // LOGIN / UPDATE USER
     const loginUser = (userData) => {
         setUserState(userData);
-        setUser(userData); // localStorage sync
+        setUser(userData);
     };
 
-    // LOGOUT
     const logoutUser = () => {
         setUserState(null);
         clearUser();
     };
 
-    // REFRESH USER (ВАЖНО для courses)
     const refreshUser = async (id) => {
         try {
             const res = await api.get(`/users/${id}`);

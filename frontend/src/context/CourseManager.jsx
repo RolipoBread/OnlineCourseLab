@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCourses } from "../../src/api/courseApi";
+import { api } from "../../src/api/axios";
 import "../../src/styles/global.css";
 
 export default function CourseManager() {
@@ -27,15 +28,14 @@ export default function CourseManager() {
         load();
     }, []);
 
+    // ================= DELETE =================
     const deleteCourse = async (id) => {
         if (!window.confirm("Удалить курс?")) return;
 
         try {
-            await fetch(`http://localhost:8080/courses/${id}`, {
-                method: "DELETE"
-            });
-
+            await api.delete(`/courses/${id}`);
             load();
+
         } catch (e) {
             console.error(e);
             setError("Ошибка удаления курса");

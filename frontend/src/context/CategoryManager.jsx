@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCategories } from "../../src/api/categoryApi.js";
+import { api } from "../../src/api/axios.js";
 import "../../src/styles/global.css";
 
 export default function CategoryManager() {
@@ -13,6 +14,7 @@ export default function CategoryManager() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    // ================= LOAD =================
     const load = async () => {
         setLoading(true);
         setError(null);
@@ -37,13 +39,9 @@ export default function CategoryManager() {
         if (!newName.trim()) return;
 
         try {
-            await fetch("http://localhost:8080/categories", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: newName.trim(),
-                    description: "Описание категории"
-                })
+            await api.post("/categories", {
+                name: newName.trim(),
+                description: "Описание категории"
             });
 
             setNewName("");
@@ -60,10 +58,7 @@ export default function CategoryManager() {
         if (!window.confirm("Удалить категорию?")) return;
 
         try {
-            await fetch(`http://localhost:8080/categories/${id}`, {
-                method: "DELETE"
-            });
-
+            await api.delete(`/categories/${id}`);
             load();
 
         } catch (e) {
@@ -72,30 +67,26 @@ export default function CategoryManager() {
         }
     };
 
-    // ================= START EDIT =================
+    // ================= EDIT START =================
     const startEdit = (cat) => {
         setEditingId(cat.id);
         setEditingName(cat.name);
     };
 
-    // ================= CANCEL EDIT =================
+    // ================= CANCEL =================
     const cancelEdit = () => {
         setEditingId(null);
         setEditingName("");
     };
 
-    // ================= SAVE EDIT =================
+    // ================= SAVE =================
     const saveEdit = async (id) => {
         if (!editingName.trim()) return;
 
         try {
-            await fetch(`http://localhost:8080/categories/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: editingName.trim(),
-                    description: "Описание категории"
-                })
+            await api.put(`/categories/${id}`, {
+                name: editingName.trim(),
+                description: "Описание категории"
             });
 
             cancelEdit();
