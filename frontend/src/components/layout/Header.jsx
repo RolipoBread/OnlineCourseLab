@@ -18,8 +18,6 @@ export default function Header() {
                 <div className="nav">
 
                     <div className="nav-buttons">
-
-                        {/* СКРЫВАЕМ НА ПРОФИЛЕ */}
                         {!isProfilePage && (
                             <>
                                 {!user ? (
