@@ -16,12 +16,9 @@ export default function CourseCard({ course }) {
         }
 
         try {
-            // ENROLL
             await api.put(
                 `/users/${user.id}/courses/${course.id}`
             );
-
-            // refresh user
             const res = await api.get(`/users/${user.id}`);
             loginUser(res.data);
 
