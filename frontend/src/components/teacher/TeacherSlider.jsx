@@ -56,7 +56,6 @@ export default function TeacherSlider({ teachers }) {
 
                                 <div className="teacher-overlay">
 
-                                    {/* ИМЯ (увеличили) */}
                                     <div
                                         className="teacher-name"
                                         style={{ fontSize: "2rem", fontWeight: "700" }}
@@ -64,7 +63,6 @@ export default function TeacherSlider({ teachers }) {
                                         {t.name}
                                     </div>
 
-                                    {/* Эл. почта вместо роли */}
                                     <div className="teacher-email">
                                         {t.email}
                                     </div>
