@@ -109,7 +109,6 @@ export default function CategoryManager() {
                 </div>
             )}
 
-            {/* CREATE */}
             <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
 
                 <input
@@ -130,7 +129,6 @@ export default function CategoryManager() {
                 <div>Категорий нет</div>
             )}
 
-            {/* LIST */}
             {categories.map(c => (
                 <div
                     key={c.id}
@@ -145,7 +143,6 @@ export default function CategoryManager() {
                     }}
                 >
 
-                    {/* EDIT MODE */}
                     {editingId === c.id ? (
                         <input
                             value={editingName}
@@ -156,7 +153,6 @@ export default function CategoryManager() {
                         <span>{c.name}</span>
                     )}
 
-                    {/* ACTIONS */}
                     <div style={{ display: "flex", gap: "8px" }}>
 
                         {editingId === c.id ? (
